@@ -180,5 +180,26 @@ describe('Supertext errors reach the integration unchanged', () => {
     expect(tenants.length).toBe(2);
     expect(tenants[0]!.last_user_agent).toContain('Test-Supertext-Translation/1.0.0');
     expect(segmentsIn('<div data-st-id="a"></div>')).toEqual(['a']);
+    const plugins = await sql`SELECT plugin, plugin_version, sdk, key_checks, uploads, memory_answers FROM integrations ORDER BY tenant`;
+    expect(plugins.length).toBe(2);
+    for (const p of plugins) expect(p).toMatchObject({ plugin: 'Test-Supertext-Translation', plugin_version: '1.0.0', sdk: 'typescript' });
+    const a = plugins.find((p) => p.uploads > 2)!;
+    expect(a.memory_answers).toBeGreaterThan(0);
+    expect(a.key_checks).toBeGreaterThan(0);
+  });
+
+  it('reports plugin usage to the Commando Center, and nothing else', async () => {
+    const get = (auth?: string) => h.fetch('http://proxy.test/api/usage', { headers: auth ? { Authorization: auth } : {} });
+    expect((await get()).status).toBe(401);
+    expect((await get('Bearer wrong-token-wrong-token-wrong-token-00')).status).toBe(401);
+    const res = await get('Bearer test-usage-token-test-usage-token-0123');
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { schema: number; integrations: Record<string, unknown>[] };
+    expect(body.schema).toBe(1);
+    expect(body.integrations).toHaveLength(2);
+    expect(Object.keys(body.integrations[0]!).sort()).toEqual(
+      ['firstSeenAt', 'keyChecks', 'lastSeenAt', 'memoryAnswers', 'plugin', 'pluginVersion', 'sdk', 'tenant', 'tenantLabel', 'uploads'],
+    );
+    expect(JSON.stringify(body)).not.toContain('Willkommen');
   });
 });

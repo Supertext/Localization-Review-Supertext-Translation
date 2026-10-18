@@ -8,6 +8,6 @@ export default defineConfig({
     // Integration tests each use their own database, but share the process environment.
     fileParallelism: false,
     testTimeout: 30_000,
-    env: { REVIEW_LINK_SECRET: 'test-secret-test-secret-test-secret-0123' },
+    env: { REVIEW_LINK_SECRET: 'test-secret-test-secret-test-secret-0123', REVIEW_USAGE_TOKEN: 'test-usage-token-test-usage-token-0123' },
   },
 });

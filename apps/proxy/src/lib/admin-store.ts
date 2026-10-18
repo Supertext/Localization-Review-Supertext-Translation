@@ -146,3 +146,26 @@ export async function listLinks(siteId: number): Promise<LinkRow[]> {
 }
 
 export const ROLES: ReviewRole[] = ['customer', 'linguist'];
+
+export interface IntegrationRow {
+  tenant: string;
+  tenant_label: string;
+  plugin: string;
+  plugin_version: string;
+  sdk: string;
+  user_agent: string;
+  key_checks: number;
+  uploads: number;
+  memory_answers: number;
+  first_seen_at: Date;
+  last_seen_at: Date;
+}
+
+/** Every plugin installation that used the proxy, by plugin, newest first; or one tenant's. */
+export async function listIntegrations(tenant?: string): Promise<IntegrationRow[]> {
+  const sql = db();
+  return sql<IntegrationRow[]>`
+    SELECT i.*, t.label AS tenant_label FROM integrations i JOIN tenants t ON t.fingerprint = i.tenant
+    ${tenant ? sql`WHERE i.tenant = ${tenant}` : sql``}
+    ORDER BY i.plugin = '', lower(i.plugin), i.last_seen_at DESC`;
+}

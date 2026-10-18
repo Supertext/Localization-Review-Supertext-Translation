@@ -14,6 +14,7 @@ import { isBlankSegment, isSafeSegmentContent, replaceSegments, scanDocument, sc
 import { db } from './db';
 import { apiError, json, readBody } from './http';
 import { countHits, segmentKey, servedTranslations, storeAiResults, type AiResult, type PairScope } from './memory';
+import { recordIntegration } from './integrations';
 import { markVerified, recentlyVerified, touchTenant, type Caller } from './tenant';
 import * as upstream from './upstream';
 
@@ -163,6 +164,7 @@ export async function createJob(req: Request, caller: Caller): Promise<Response>
   }
 
   await touchTenant(caller);
+  await recordIntegration(caller, mode === 'local' ? 'memory_answer' : 'upload');
   await countHits([...known.keys()], caller.userAgent);
   const jobId = randomBytes(16).toString('hex');
   const sql = db();

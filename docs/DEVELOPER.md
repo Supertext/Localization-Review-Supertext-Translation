@@ -90,6 +90,17 @@ Anything else is 422 `markup_not_allowed`. A stolen link therefore can't inject 
 
 `review_links` holds site, target language, role (`customer` or `linguist`), label and expiry; the token is `<id>.<HMAC-SHA256(REVIEW_LINK_SECRET, "review-link:v1:<id>")>` (base64url). Revoking sets `revoked_at`; changing the secret invalidates every link. A link is `https://<proxy>/review#<token>`: the token is in the fragment, so it never reaches server or proxy logs. The public page `/review` reads it in the browser and asks `GET /api/review/session` what the link is for.
 
+## Usage API
+
+For the Commando Center, which shows which plugins use the proxy (it never handles translations or review links).
+
+```http
+GET /api/usage
+Authorization: Bearer <REVIEW_USAGE_TOKEN>
+```
+
+`200` → `{ "schema": 1, "generatedAt": "<ISO time>", "integrations": [{ "tenant": "<fingerprint>", "tenantLabel": "…", "plugin": "Typo3-Supertext-Translation", "pluginVersion": "0.6.0", "sdk": "php", "keyChecks": 3, "uploads": 42, "memoryAnswers": 17, "firstSeenAt": "…", "lastSeenAt": "…" }] }`, one entry per tenant and plugin (`plugin` is `""` when the User-Agent names none). Never translations, sites or links. `401` with a wrong token; `404` when `REVIEW_USAGE_TOKEN` (at least 32 characters) isn't set. New fields may be added; readers ignore unknown ones.
+
 ## Data model
 
 | Table | What it holds |
@@ -98,6 +109,7 @@ Anything else is 422 `markup_not_allowed`. A stolen link therefore can't inject 
 | `segments` | The translation memory (see above), with status `ai`, `corrected` or `approved`, request count and the plugin's User-Agent |
 | `segment_events` | History per segment: `ai`, `correction`, `approval`, `comment`, with reviewer, role and link |
 | `jobs` | One upload (the proxy's `file_id`): mode, original document, segment keys, Supertext's file id and status, Supertext's document in *full* mode. Deleted after 24 hours |
+| `integrations` | Which plugin uses the proxy, per tenant: plugin name and latest version, SDK, User-Agent, counters (key checks, uploads, uploads answered from the memory), first and last request. Parsed from the User-Agent the SDKs send (`supertext-sdk-<language>[/<version>] <Plugin>/<version>`; plugins without the SDK send `<plugin>/<version>`), in `src/lib/integrations.ts`. Recording never fails a request |
 | `review_sites` | A customer website: tenant, origin, source language and path prefix, target language prefixes |
 | `review_links` | Review links (see above) |
 
@@ -105,7 +117,7 @@ Migrations are plain SQL in `apps/proxy/migrations/`, applied in order by `apps/
 
 ## Staff pages
 
-One shared password (`REVIEW_ADMIN_PASSWORD`), signed 14-day session cookie (same as the Commando Center). Logins are limited to 10 per 15 minutes per address (the first `X-Forwarded-For` entry: Railway's edge writes the header, while the last entry can be a shared CDN hop), and past 100 failed logins in 15 minutes from anywhere every attempt waits 3 seconds: a slowdown, not a lockout. Every page and server action calls `requireAuth()`. Public: `/v1/*`, `/api/review/*`, `/review`, `/health`, `/login`. Pages: tenants (`/`), a tenant with its memory (`/tenants/<fingerprint>`), review sites (`/sites`) and a site with its links (`/sites/<id>`). Segment HTML is always shown as text, never rendered, since it comes from customers' sites. The look is the Commando Center's (`src/app/globals.css`, Inter in `public/fonts/`).
+One shared password (`REVIEW_ADMIN_PASSWORD`), signed 14-day session cookie (same as the Commando Center). Logins are limited to 10 per 15 minutes per address (the first `X-Forwarded-For` entry: Railway's edge writes the header, while the last entry can be a shared CDN hop), and past 100 failed logins in 15 minutes from anywhere every attempt waits 3 seconds: a slowdown, not a lockout. Every page and server action calls `requireAuth()`. Public: `/v1/*`, `/api/review/*`, `/api/usage` (its own token), `/review`, `/health`, `/login`. Pages: tenants (`/`), a tenant with its plugins and memory (`/tenants/<fingerprint>`), review sites (`/sites`) and a site with its links (`/sites/<id>`). Segment HTML is always shown as text, never rendered, since it comes from customers' sites. The look is the Commando Center's (`src/app/globals.css`, Inter in `public/fonts/`).
 
 | Path | What it is |
 | --- | --- |

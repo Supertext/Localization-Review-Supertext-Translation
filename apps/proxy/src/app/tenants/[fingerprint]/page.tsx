@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { SegmentStatus } from '@supertext-review/shared';
-import { getTenant, listSegments } from '@/lib/admin-store';
+import { getTenant, listIntegrations, listSegments } from '@/lib/admin-store';
+import IntegrationsTable from '@/components/integrations-table';
 import { requireAuth } from '@/lib/session';
 import { SegmentText, StatusBadge, tenantName, when } from '@/components/format';
 import { saveTenant } from '../../actions';
@@ -23,7 +24,10 @@ export default async function TenantPage({
   const tenant = await getTenant(fingerprint);
   if (!tenant) notFound();
   const status = STATUSES.includes(f.status as SegmentStatus) ? (f.status as SegmentStatus) : undefined;
-  const segments = await listSegments(fingerprint, { targetLang: f.lang || undefined, status, q: f.q || undefined });
+  const [segments, integrations] = await Promise.all([
+    listSegments(fingerprint, { targetLang: f.lang || undefined, status, q: f.q || undefined }),
+    listIntegrations(fingerprint),
+  ]);
   return (
     <>
       <p className="small"><Link className="link" href="/">Tenants</Link></p>
@@ -56,6 +60,11 @@ export default async function TenantPage({
             To let people review this tenant&apos;s site, <Link className="link" href="/sites">add a review site</Link> and create review links.
           </p>
         </div>
+      </div>
+
+      <h2>Plugins</h2>
+      <div className="card table-wrap">
+        <IntegrationsTable rows={integrations} showTenant={false} />
       </div>
 
       <h2>Translation memory</h2>

@@ -73,3 +73,14 @@ describe('site settings', () => {
     expect(normalizePrefix('/fr?x=1')).toBeNull();
   });
 });
+
+describe('plugins from the User-Agent', async () => {
+  const { parseUserAgent } = await import('../../src/lib/integrations');
+  it('reads the SDK and plugin tokens', () => {
+    expect(parseUserAgent('supertext-sdk-php Typo3-Supertext-Translation/0.6.0')).toEqual({ plugin: 'Typo3-Supertext-Translation', version: '0.6.0', sdk: 'php' });
+    expect(parseUserAgent('supertext-sdk-typescript/0.5.0 Payload-Supertext-Translation/1.2.0')).toEqual({ plugin: 'Payload-Supertext-Translation', version: '1.2.0', sdk: 'typescript' });
+    expect(parseUserAgent('supertext-wordpress-polylang/2.1.0 WordPress/6.9')).toEqual({ plugin: 'supertext-wordpress-polylang', version: '2.1.0', sdk: '' });
+    expect(parseUserAgent('GuzzleHttp/7 curl/8.5 PHP/8.3')).toEqual({ plugin: '', version: '', sdk: '' });
+    expect(parseUserAgent('')).toEqual({ plugin: '', version: '', sdk: '' });
+  });
+});

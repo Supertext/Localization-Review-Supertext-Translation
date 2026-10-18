@@ -48,6 +48,8 @@ async function translate(texts, target, { html = false } = {}) {
   return out;
 }
 
+await fetch(`${BASE}/v1/features`, { headers: { Authorization: `Supertext-Auth-Key ${KEY}`, 'User-Agent': UA } });
+
 const PAGE = [
   'Welcome to Hotel Alpenblick',
   'Book your room directly and get breakfast for free.',

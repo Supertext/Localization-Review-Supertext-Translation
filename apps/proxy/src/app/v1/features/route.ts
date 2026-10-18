@@ -1,4 +1,5 @@
 import { guarded } from '@/lib/http';
+import { recordIntegration } from '@/lib/integrations';
 import { touchTenant, markVerified, readCaller } from '@/lib/tenant';
 import * as upstream from '@/lib/upstream';
 
@@ -18,6 +19,7 @@ export const GET = guarded('v1', async function GET(req: Request) {
   if (r.status === 200) {
     markVerified(caller.tenant);
     await touchTenant(caller);
+    await recordIntegration(caller, 'key_check');
   }
   return upstream.passThrough(r);
 });

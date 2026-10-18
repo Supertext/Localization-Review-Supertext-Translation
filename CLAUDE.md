@@ -12,7 +12,7 @@
 - `packages/shared/src/text.ts` defines how page texts match stored texts; changing it needs a migration that recomputes `served_text` and `source_text`.
 - The test copies in `apps/proxy/test/` (stand-in, languages, TypeScript SDK) are never edited: `apps/proxy/scripts/vendor-test-deps.sh [ref]`.
 - UI changes: regenerate the screenshots (`docs/DEVELOPER.md` → *Screenshots*). The staff UI stays in English; the extension's UI will be in English, German, French and Italian.
-- Every staff page and server action calls `requireAuth()`; only `/v1/*`, `/api/review/*`, `/review`, `/health` and `/login` are public.
+- Every staff page and server action calls `requireAuth()`; only `/v1/*`, `/api/review/*`, `/api/usage` (its own token), `/review`, `/health` and `/login` are public. `/api/usage` is for the Commando Center and carries usage only, never translations, sites or links.
 
 ## Before committing
 

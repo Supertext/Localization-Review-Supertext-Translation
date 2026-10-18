@@ -21,6 +21,7 @@ For Supertext staff who run the translation proxy. The Chrome extension's instal
 | `REVIEW_DB_NAME` | recommended | The proxy's own database on that server (lower case, digits, `_`); created on first start |
 | `REVIEW_ADMIN_PASSWORD` | yes | Shared password for the staff pages, at least 12 characters. Changing it signs everyone out |
 | `REVIEW_LINK_SECRET` | for review links | Signs review links, at least 32 random characters (`openssl rand -base64 33`). Changing it invalidates **every** review link |
+| `REVIEW_USAGE_TOKEN` | for the Commando Center | Token the Commando Center uses to read which plugins use the proxy (`/api/usage`), at least 32 random characters. Set the same value as `COMMANDO_PROXY_TOKEN` on the Commando Center |
 | `REVIEW_PUBLIC_URL` | recommended | The proxy's public address, used in review links (default: the address the staff page was opened with) |
 | `SUPERTEXT_API_URL` | no | The Supertext API the proxy forwards to. Default `https://api.supertext.com/v1/`. Only tests change it |
 | `REVIEW_TIMEZONE` | no | Time zone for dates in the UI (default `Europe/Zurich`) |

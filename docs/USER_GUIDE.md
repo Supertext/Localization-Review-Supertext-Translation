@@ -18,6 +18,10 @@ Open a tenant to give it a **label** (the customer's name and site) and notes. B
 
 ![A tenant's translation memory with one corrected text](images/tenant-memory.png)
 
+## Plugins using the proxy
+
+Which plugins (name, version, SDK) send their translations through the proxy, per tenant, with their uploads, how many the proxy answered from the memory and their key checks, is shown in the **Commando Center** under *Translation proxy*. The Commando Center reads it from the proxy's usage API; it never sees translations, review sites or links. A tenant's page here lists its plugins too.
+
 ## Review sites and links
 
 To let people review a customer's website, add it under **Review sites** → *New review site*:
