@@ -1,0 +1,53 @@
+/* Supertext's look (as the proxy and the Commando Center): deep green, mint, warm off-white, Inter. */
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('fonts/inter-latin-wght-normal.woff2') format('woff2'); }
+:root {
+  --bg: #f7f5f3; --surface: #fff; --text: #003230; --muted: #505252; --line: #dfe1df; --mint: #78ffaf; --mint-light: #e4fff0;
+  --danger: #c4314b; --bad-bg: #fdebee; --neutral-bg: #eef1ef; --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font: 13px/1.45 Inter, ui-sans-serif, system-ui, sans-serif; }
+header { display: flex; align-items: center; gap: 8px; background: var(--text); color: #fff; padding: 10px 12px; font-weight: 600; }
+header img { border-radius: 4px; }
+header .link { margin-left: auto; color: #fff; border: 0; }
+main { padding: 12px; display: grid; gap: 10px; }
+h1 { font-size: 18px; margin: 4px 0 0; }
+h2 { font-size: 14px; margin: 8px 0 0; }
+p { margin: 0; }
+label { font-weight: 600; font-size: 12px; }
+input, textarea { font: inherit; color: var(--text); background: var(--surface); border: 1px solid #c8cbc8; border-radius: 8px; padding: 7px 10px; width: 100%; }
+textarea { resize: vertical; }
+input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--text); margin: 0; }
+:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+button { font: inherit; font-weight: 500; color: var(--text); background: transparent; border: 1px solid var(--text); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+button:hover { background: var(--line); }
+button.primary { background: var(--mint); border-color: var(--mint); font-weight: 600; }
+button:disabled { opacity: .5; cursor: default; }
+button.link { border: 0; padding: 2px 0; text-decoration: underline; text-underline-offset: 3px; background: none; justify-self: start; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.row.space { justify-content: space-between; }
+.toggles { display: grid; gap: 6px; }
+label.check { display: flex; gap: 8px; align-items: center; font-weight: 400; font-size: 13px; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.mono { font-family: var(--mono); font-size: 12px; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; margin: 0; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+.notice { padding: 8px 12px; border-radius: 10px; border-left: 4px solid var(--mint); background: var(--mint-light); }
+.notice.error { border-left-color: var(--danger); background: var(--bad-bg); }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.tab { border-color: transparent; padding: 4px 10px; font-size: 12px; }
+.tab.active { background: var(--mint); border-color: var(--mint); font-weight: 600; }
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.list li { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; display: grid; gap: 2px; }
+.list li.selected { border-color: var(--text); }
+.list .item { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; width: 100%; text-align: left; border: 0; border-radius: 0; padding: 0; background: none; }
+.list .text { overflow-wrap: anywhere; }
+.list .where { flex: none; color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 8px; }
+.source { background: var(--neutral-bg); border-radius: 8px; padding: 8px 10px; overflow-wrap: anywhere; }
+.badge { flex: none; display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--neutral-bg); color: var(--muted); }
+.badge.corrected, .badge.approved { background: var(--mint); color: var(--text); }
+.history { margin: 0; padding-left: 18px; display: grid; gap: 8px; }
+.history .comment { font-style: italic; }

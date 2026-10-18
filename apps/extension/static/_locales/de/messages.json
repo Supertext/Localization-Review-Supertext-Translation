@@ -1,0 +1,228 @@
+{
+  "extName": {
+    "message": "Supertext Localization Review"
+  },
+  "extDescription": {
+    "message": "Übersetzungen einer Website im Kontext prüfen: Original und Übersetzung nebeneinander, Texte direkt korrigieren."
+  },
+  "connectTitle": {
+    "message": "Prüfung starten"
+  },
+  "connectHelp": {
+    "message": "Fügen Sie den Prüflink ein, den Sie von Supertext erhalten haben (er beginnt mit https:// und enthält /review#)."
+  },
+  "connectLinkLabel": {
+    "message": "Prüflink"
+  },
+  "connectButton": {
+    "message": "Verbinden"
+  },
+  "errorBadLink": {
+    "message": "Das ist kein Prüflink. Kopieren Sie den ganzen Link aus der E-Mail oder Nachricht."
+  },
+  "errorPermission": {
+    "message": "Die Erweiterung braucht die Berechtigung, den Prüfdienst und die Website zu lesen. Klicken Sie nochmals auf Verbinden und erlauben Sie es."
+  },
+  "errorUnauthorized": {
+    "message": "Dieser Prüflink ist ungültig. Bitten Sie Supertext um einen neuen."
+  },
+  "errorExpired": {
+    "message": "Dieser Prüflink ist abgelaufen. Bitten Sie Supertext um einen neuen."
+  },
+  "errorRevoked": {
+    "message": "Dieser Prüflink wurde widerrufen. Bitten Sie Supertext um einen neuen."
+  },
+  "errorNetwork": {
+    "message": "Der Prüfdienst ist nicht erreichbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  },
+  "errorGeneric": {
+    "message": "Etwas ist schiefgelaufen: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorMarkup": {
+    "message": "Die Korrektur ändert Formatierung oder Links, das ist nicht erlaubt. Lassen Sie die Tags unverändert und ändern Sie nur die Wörter."
+  },
+  "errorReviewer": {
+    "message": "Geben Sie zuerst Ihren Namen ein, damit Supertext weiss, wer die Änderung gemacht hat."
+  },
+  "site": {
+    "message": "Website"
+  },
+  "language": {
+    "message": "Sprache"
+  },
+  "validUntil": {
+    "message": "Gültig bis"
+  },
+  "roleCustomer": {
+    "message": "Kunde"
+  },
+  "roleLinguist": {
+    "message": "Supertext-Linguist"
+  },
+  "reviewerLabel": {
+    "message": "Ihr Name"
+  },
+  "openSideBySide": {
+    "message": "Nebeneinander öffnen"
+  },
+  "openSite": {
+    "message": "Website öffnen"
+  },
+  "rescan": {
+    "message": "Seite neu prüfen"
+  },
+  "syncScroll": {
+    "message": "Gemeinsam scrollen"
+  },
+  "reviewMode": {
+    "message": "Texte per Klick auswählen (Links öffnen sich nicht)"
+  },
+  "disconnect": {
+    "message": "Trennen"
+  },
+  "splitHint": {
+    "message": "Ihr Chrome kann die Seiten nicht selbst nebeneinander öffnen. Drücken Sie Umschalt+Alt+N (Mac: Cmd+Wahl+N) oder klicken Sie mit der rechten Maustaste auf den Tab und wählen Sie den Eintrag für die geteilte Ansicht."
+  },
+  "noPrefixHint": {
+    "message": "Öffnen Sie die Originalseite und die übersetzte Seite selbst; die Erweiterung erkennt sie, sobald beide nebeneinander sind."
+  },
+  "notOnSite": {
+    "message": "Öffnen Sie eine Seite der Website, um zu beginnen."
+  },
+  "sideOriginal": {
+    "message": "Original"
+  },
+  "sideTranslation": {
+    "message": "Übersetzung"
+  },
+  "tabPage": {
+    "message": "Auf dieser Seite ($COUNT$)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "tabUnmatched": {
+    "message": "Nicht zugeordnet ($COUNT$)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "tabInvisible": {
+    "message": "Unsichtbare Texte ($COUNT$)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyPage": {
+    "message": "Auf dieser Seite wurden noch keine übersetzten Texte gefunden."
+  },
+  "emptyUnmatched": {
+    "message": "Jeder Text auf dieser Seite gehört zu einer Übersetzung."
+  },
+  "emptyInvisible": {
+    "message": "Keine unsichtbaren Texte auf dieser Seite."
+  },
+  "unmatchedUntranslated": {
+    "message": "Nicht übersetzt: Die Seite zeigt den Originaltext."
+  },
+  "unmatchedOther": {
+    "message": "Nicht aus den übersetzten Inhalten: wahrscheinlich das Theme, eine Vorlage, ein Skript oder Inhalte, die nie zur Übersetzung geschickt wurden."
+  },
+  "statusAi": {
+    "message": "KI"
+  },
+  "statusCorrected": {
+    "message": "Korrigiert"
+  },
+  "statusApproved": {
+    "message": "Freigegeben"
+  },
+  "original": {
+    "message": "Original"
+  },
+  "translation": {
+    "message": "Übersetzung"
+  },
+  "markupHint": {
+    "message": "Dieser Text hat Formatierungen oder Links. Ändern Sie nur die Wörter zwischen den Tags."
+  },
+  "save": {
+    "message": "Korrektur speichern"
+  },
+  "approve": {
+    "message": "Freigeben"
+  },
+  "commentLabel": {
+    "message": "Kommentar (optional)"
+  },
+  "addComment": {
+    "message": "Kommentar hinzufügen"
+  },
+  "saved": {
+    "message": "Gespeichert. Die Website zeigt es nach der nächsten Aktualisierung dieser Seite im CMS."
+  },
+  "approved": {
+    "message": "Freigegeben."
+  },
+  "commented": {
+    "message": "Kommentar hinzugefügt."
+  },
+  "history": {
+    "message": "Verlauf"
+  },
+  "historyAi": {
+    "message": "KI-Übersetzung"
+  },
+  "historyCorrection": {
+    "message": "Korrektur von $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyApproval": {
+    "message": "Freigegeben von $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyComment": {
+    "message": "Kommentar von $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "selectHint": {
+    "message": "Klicken Sie auf einen markierten Text auf der Seite oder in der Liste, um ihn zu prüfen."
+  },
+  "back": {
+    "message": "Zurück zur Liste"
+  },
+  "severalSources": {
+    "message": "Dieser Text kommt mit $COUNT$ verschiedenen Originalen vor.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "scanning": {
+    "message": "Seite wird geprüft …"
+  }
+}

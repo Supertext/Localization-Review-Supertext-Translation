@@ -28,6 +28,18 @@ For Supertext staff who run the translation proxy. The Chrome extension's instal
 
 Never put the values in the repo, in chat or in logs.
 
+## The Chrome extension
+
+Reviewers need Google Chrome 140 or newer (155+ opens the side-by-side view by itself; older versions show the shortcut). Until the extension is in the Chrome Web Store:
+
+1. Download `supertext-localization-review-<version>.zip` from the latest [GitHub release](https://github.com/Supertext/Localization-Review-Supertext-Translation/releases) and unzip it.
+2. Open `chrome://extensions`, turn on *Developer mode* (top right), click *Load unpacked* and choose the unzipped folder.
+3. Pin the extension (puzzle icon → pin) so its icon is in the toolbar.
+
+The same zip is what goes to the Chrome Web Store (Developer Dashboard → new item → upload; the listing needs the four screenshots in `docs/images/extension-*.png`, the description and a privacy note: the extension reads the pages of the review site only while a review link is connected, and sends their texts only to the review service of that link).
+
+Permissions: *side panel*, *storage* (the review link and the reviewer's name), *tabs* and *scripting* (to find the two pages and read them). Access to a website is asked for when a review link for it is connected, never for all sites.
+
 ## Pointing a plugin at the proxy
 
 The proxy answers exactly like the Supertext AI file translation API v1 under `https://<proxy>/v1/`. Nothing changes in the plugin except its **Supertext API URL**: the plugin's base URL setting or environment variable (each plugin's `docs/INSTALLATION.md` names it). The plugin keeps its own API key; the proxy forwards it to Supertext with every call that reaches Supertext, so billing, language pairs and errors stay Supertext's.

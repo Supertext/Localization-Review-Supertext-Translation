@@ -10,7 +10,7 @@ npm workspaces, one lockfile at the root.
 | --- | --- |
 | `packages/shared` | Code both parts use: finding segments in a Supertext document, text normalization, markup rules for corrections, review API types. TypeScript sources, no build step (Next.js transpiles them; the extension's bundler will too) |
 | `apps/proxy` | The proxy: Next.js 16 (App Router) + PostgreSQL |
-| `apps/extension` | The Chrome extension (not there yet) |
+| `apps/extension` | The Chrome extension (Manifest V3, TypeScript, built with esbuild into `dist/`) |
 | `Dockerfile` | The proxy's production image, built from the repo root |
 | `docs/` | These guides and their screenshots (`docs/images/`) |
 
@@ -101,6 +101,27 @@ Authorization: Bearer <REVIEW_USAGE_TOKEN>
 
 `200` → `{ "schema": 1, "generatedAt": "<ISO time>", "integrations": [{ "tenant": "<fingerprint>", "tenantLabel": "…", "plugin": "Typo3-Supertext-Translation", "pluginVersion": "0.6.0", "sdk": "php", "keyChecks": 3, "uploads": 42, "memoryAnswers": 17, "firstSeenAt": "…", "lastSeenAt": "…" }] }`, one entry per tenant and plugin (`plugin` is `""` when the User-Agent names none). Never translations, sites or links. `401` with a wrong token; `404` when `REVIEW_USAGE_TOKEN` (at least 32 characters) isn't set. New fields may be added; readers ignore unknown ones.
 
+## Chrome extension
+
+`apps/extension`: Manifest V3, Chrome 140+ (`minimum_chrome_version`; `Tab.splitViewId` exists from 140, the Split View API from 155).
+
+| File | What it does |
+| --- | --- |
+| `src/panel.ts`, `static/panel.html`, `panel.css` | The side panel and all state: connecting, finding the two tabs, matching through the review API, the lists, the editor. Registered for the whole window (`side_panel.default_path`), so it stays open when the reviewer clicks into the other half of the split view |
+| `src/content.ts` | Injected by the panel (`scripting.executeScript`) into both tabs: reads the texts, marks matched blocks (`data-st-review`, `data-st-review-seg`), reports clicks, hovers and scrolling, highlights the selection |
+| `src/background.ts` | Opens the panel on the toolbar icon |
+| `src/lib/collect.ts` | Reads a page: each block element that directly holds text (`htmlToText(innerHTML)` without nested blocks, so it equals the proxy's `served_text`), and invisible texts: `<title>`, meta description/OG/Twitter, `alt`, `title`, `aria-label`, `placeholder`, button values, JSON-LD names and descriptions |
+| `src/lib/split.ts` | Split view: `tabs.create({ splitWithTabId })` (155+), then `tabs.createSplit` if needed; otherwise a normal tab and the shortcut hint. Never `tabs.move` on split tabs (it breaks the split) |
+| `src/lib/urls.ts` | The other language's page by swapping the site's path prefixes |
+| `src/lib/link.ts`, `api.ts` | Review link parsing (`https://<proxy>/review#<token>`) and the review API client (matches in chunks of 2000) |
+| `static/_locales/{en,de,fr,it}` | UI texts (`chrome.i18n`), formal address; a test checks every language has the same keys, placeholders and URLs as English |
+
+- **Which tab is which:** the active tab and its split-view partner (`splitViewId`). With path prefixes the URL decides; without, the tab with more matched translations is the translation.
+- **Unmatched texts** on the translated page are matched once more as *originals*: a hit means the page shows the source text (*not translated*); otherwise it doesn't come from the translated content.
+- **Safety:** page and proxy content is shown with `textContent` and textarea values only, never as HTML; the content script adds only attributes and one stylesheet. Host access is optional (`optional_host_permissions`) and asked for the review site's origin when a link is connected; the review API is reached through its CORS headers. Extension pages run under a strict CSP (`script-src 'self'`).
+- **Build:** `npm run build --workspace apps/extension` → `apps/extension/dist/` (load unpacked); `npm run zip …` → `apps/extension/release/supertext-localization-review-<version>.zip`. The manifest's version must equal `package.json`'s.
+- **Tests:** `npm test` runs the unit tests (link and URL rules, page reading in happy-dom, the API client, the UI language check). `npm run test:e2e --workspace apps/extension` builds with `--e2e` (pre-grants `http://127.0.0.1` and `http://localhost`, never released), then loads the extension in Playwright's full Chromium against the proxy's route handlers, the stand-in and a two-language test site (`test/e2e/site/`): connect, open side by side (asserts the native split view, or the hint), check marks on both pages, unmatched and invisible lists, correct from the list, select by clicking the page, refuse a changed link, and get the corrections back through the SDK. Playwright can't drive the real side panel, so the test opens `panel.html?window=<id>` in its own tab; the parameter only chooses the window whose tabs are reviewed. `SCREENSHOTS=1` saves `docs/images/extension-*.png`.
+
 ## Data model
 
 | Table | What it holds |
@@ -178,12 +199,12 @@ Releases are published by `.github/workflows/release.yml` when the version is of
 
 1. Check that `npm run typecheck && npm test && npm run test:integration` pass.
 2. Move the *Unreleased* entries in `CHANGELOG.md` under a new `## [X.Y.Z] - YYYY-MM-DD` section, below an empty *Unreleased*.
-3. Set the same version in `package.json`, `apps/proxy/package.json` (the footer shows it, linked to the release) and `packages/shared/package.json`. The extension's manifest joins this list when it exists.
+3. Set the same version in `package.json`, `apps/proxy/package.json` (the footer shows it, linked to the release), `packages/shared/package.json`, `apps/extension/package.json` and `apps/extension/static/manifest.json`. The release gets the extension's zip attached.
 4. Push to `main`. The workflow checks the version files, tags `vX.Y.Z` and creates the release (0.x as pre-releases). Railway deploys every push to `main` independently.
 
 ## Known limitations / roadmap
 
-- **Chrome extension** (next): split view with Chrome 155's Split View API (`tabs.create({ splitWithTabId })`, `tabs.createSplit`, `Tab.splitViewId`), a window-wide side panel, linked highlighting and scrolling, unmatched and invisible texts. See the project doc.
+- **Chrome Web Store:** the extension is installed unpacked from the release zip until it is listed (see the installation guide).
 - **Write-back:** corrections reach the CMS on the plugin's next request for that text. A push to the CMS (for content that isn't translated again) is planned in the SDK, so it is built once for all plugins.
 - **Plugins' API URL:** switching a plugin to the proxy needs its base URL setting or environment variable. Check each plugin's installation guide; plugins that only have it for tests need a real setting first.
 - **Text split across elements** or changed by templates doesn't match exactly; the optional website proxy with segment markers (project doc) would cover it.

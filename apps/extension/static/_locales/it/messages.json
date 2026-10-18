@@ -1,0 +1,228 @@
+{
+  "extName": {
+    "message": "Supertext Localization Review"
+  },
+  "extDescription": {
+    "message": "Verifichi le traduzioni di un sito web nel loro contesto: originale e traduzione affiancati, testi corretti direttamente."
+  },
+  "connectTitle": {
+    "message": "Iniziare la verifica"
+  },
+  "connectHelp": {
+    "message": "Incolli il link di verifica ricevuto da Supertext (inizia con https:// e contiene /review#)."
+  },
+  "connectLinkLabel": {
+    "message": "Link di verifica"
+  },
+  "connectButton": {
+    "message": "Collegare"
+  },
+  "errorBadLink": {
+    "message": "Questo non è un link di verifica. Copi l’intero link dall’e-mail o dal messaggio."
+  },
+  "errorPermission": {
+    "message": "L’estensione ha bisogno dell’autorizzazione per leggere il servizio di verifica e il sito web. Clicchi di nuovo su Collegare e la conceda."
+  },
+  "errorUnauthorized": {
+    "message": "Questo link di verifica non è valido. Ne chieda uno nuovo a Supertext."
+  },
+  "errorExpired": {
+    "message": "Questo link di verifica è scaduto. Ne chieda uno nuovo a Supertext."
+  },
+  "errorRevoked": {
+    "message": "Questo link di verifica è stato revocato. Ne chieda uno nuovo a Supertext."
+  },
+  "errorNetwork": {
+    "message": "Il servizio di verifica non è raggiungibile. Controlli la connessione e riprovi."
+  },
+  "errorGeneric": {
+    "message": "Si è verificato un errore: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorMarkup": {
+    "message": "La correzione modifica la formattazione o i link, il che non è consentito. Lasci i tag invariati e modifichi solo le parole."
+  },
+  "errorReviewer": {
+    "message": "Inserisca prima il Suo nome, così Supertext sa chi ha fatto la modifica."
+  },
+  "site": {
+    "message": "Sito web"
+  },
+  "language": {
+    "message": "Lingua"
+  },
+  "validUntil": {
+    "message": "Valido fino al"
+  },
+  "roleCustomer": {
+    "message": "Cliente"
+  },
+  "roleLinguist": {
+    "message": "Linguista Supertext"
+  },
+  "reviewerLabel": {
+    "message": "Il Suo nome"
+  },
+  "openSideBySide": {
+    "message": "Aprire affiancati"
+  },
+  "openSite": {
+    "message": "Aprire il sito web"
+  },
+  "rescan": {
+    "message": "Verificare di nuovo la pagina"
+  },
+  "syncScroll": {
+    "message": "Scorrere insieme"
+  },
+  "reviewMode": {
+    "message": "Selezionare i testi con un clic (i link non si aprono)"
+  },
+  "disconnect": {
+    "message": "Scollegare"
+  },
+  "splitHint": {
+    "message": "Il Suo Chrome non può aprire da solo le pagine affiancate. Prema Maiusc+Alt+N (Mac: Cmd+Opzione+N) oppure faccia clic destro sulla scheda e scelga la voce per la vista divisa."
+  },
+  "noPrefixHint": {
+    "message": "Apra Lei stesso la pagina originale e quella tradotta; l’estensione le riconosce quando sono affiancate."
+  },
+  "notOnSite": {
+    "message": "Apra una pagina del sito web per iniziare."
+  },
+  "sideOriginal": {
+    "message": "Originale"
+  },
+  "sideTranslation": {
+    "message": "Traduzione"
+  },
+  "tabPage": {
+    "message": "In questa pagina ($COUNT$)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "tabUnmatched": {
+    "message": "Non associati ($COUNT$)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "tabInvisible": {
+    "message": "Testi invisibili ($COUNT$)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyPage": {
+    "message": "Nessun testo tradotto trovato finora in questa pagina."
+  },
+  "emptyUnmatched": {
+    "message": "Ogni testo di questa pagina appartiene a una traduzione."
+  },
+  "emptyInvisible": {
+    "message": "Nessun testo invisibile in questa pagina."
+  },
+  "unmatchedUntranslated": {
+    "message": "Non tradotto: la pagina mostra il testo originale."
+  },
+  "unmatchedOther": {
+    "message": "Non proviene dai contenuti tradotti: probabilmente il tema, un modello, uno script o contenuti mai inviati in traduzione."
+  },
+  "statusAi": {
+    "message": "IA"
+  },
+  "statusCorrected": {
+    "message": "Corretto"
+  },
+  "statusApproved": {
+    "message": "Approvato"
+  },
+  "original": {
+    "message": "Originale"
+  },
+  "translation": {
+    "message": "Traduzione"
+  },
+  "markupHint": {
+    "message": "Questo testo contiene formattazioni o link. Modifichi solo le parole tra i tag."
+  },
+  "save": {
+    "message": "Salvare la correzione"
+  },
+  "approve": {
+    "message": "Approvare"
+  },
+  "commentLabel": {
+    "message": "Commento (facoltativo)"
+  },
+  "addComment": {
+    "message": "Aggiungere un commento"
+  },
+  "saved": {
+    "message": "Salvato. Il sito web lo mostrerà dopo il prossimo aggiornamento di questa pagina nel CMS."
+  },
+  "approved": {
+    "message": "Approvato."
+  },
+  "commented": {
+    "message": "Commento aggiunto."
+  },
+  "history": {
+    "message": "Cronologia"
+  },
+  "historyAi": {
+    "message": "Traduzione IA"
+  },
+  "historyCorrection": {
+    "message": "Correzione di $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyApproval": {
+    "message": "Approvato da $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyComment": {
+    "message": "Commento di $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "selectHint": {
+    "message": "Clicchi su un testo evidenziato nella pagina o nell’elenco per verificarlo."
+  },
+  "back": {
+    "message": "Torna all’elenco"
+  },
+  "severalSources": {
+    "message": "Questo testo compare con $COUNT$ originali diversi.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "scanning": {
+    "message": "Verifica della pagina…"
+  }
+}

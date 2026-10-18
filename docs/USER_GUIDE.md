@@ -1,6 +1,6 @@
 # User guide
 
-For Supertext staff using the translation proxy's pages. The pages are in English; sign in with the shared password. A guide for reviewers (customers and linguists using the Chrome extension) follows with the extension.
+For Supertext staff using the translation proxy's pages (in English; sign in with the shared password), and for reviewers (customers and Supertext linguists) using the Chrome extension: see [Reviewing a website](#reviewing-a-website).
 
 ## Tenants
 
@@ -43,3 +43,34 @@ Anyone who has a link can change that site's translations in that language until
 ## How corrections reach the website
 
 The proxy serves a correction the next time the plugin asks for that text: when an editor translates the page again, or the plugin translates it again on its own. Corrections don't yet appear on the website by themselves; pushing them to the CMS directly is on the roadmap.
+
+## Reviewing a website
+
+For customers and Supertext linguists. You need Google Chrome, the **Supertext Localization Review** extension (see the installation guide) and a review link from Supertext. The extension's texts follow Chrome's language (English, German, French or Italian); the screenshots show German.
+
+1. Click the extension's icon in Chrome's toolbar: its side panel opens on the right and stays open while you work.
+2. Paste the review link and click *Connect*. The first time, Chrome asks whether the extension may read the website: allow it. Enter your name: every change records who made it.
+3. Open a page of the website (or click *Open side by side* to start on the home page). The extension opens the original next to the translation in Chrome's split view: original left, translation right. If your Chrome can't do that itself, it tells you the shortcut (Shift+Alt+N, Mac: Cmd+Option+N).
+4. Texts are marked on both pages: a dashed frame for AI translations, green for corrected or approved ones, red dots for texts that were not translated, light red dots for other texts the review doesn't know. With *Scroll together* on, the original follows when you scroll the translation.
+
+![The translated page with the marks: AI translation dashed, corrected green, the selected text highlighted, an untranslated text in red dots](images/extension-page.png)
+
+The panel lists what it found on the page:
+
+- **On this page:** the translated texts, with their status (*AI*, *Corrected*, *Approved*).
+- **Not matched:** texts on the translated page that don't belong to a translation, with the likely reason: *Not translated* (the page shows the original text), or texts that don't come from the translated content (the theme, a template, a script, or content that was never sent for translation). These can't be corrected here; tell Supertext or your web agency.
+- **Invisible texts:** the page title, meta descriptions, image alt texts, tooltips, form placeholders and structured data. Those that belong to a translation can be corrected like any other text.
+
+![The panel's list of translated texts on the page](images/extension-list.png)
+
+![Texts that weren't matched, with the likely reason](images/extension-unmatched.png)
+
+Click a text in the list or on the page (with *Select texts by clicking* on, clicking a link selects its text instead of opening it). The panel shows the original and the translation:
+
+- Change the translation and click **Save correction**; add a comment if you like. Texts with formatting or links show the HTML tags: change only the words between them. Changed or added tags or links are refused, so a correction can never break the page.
+- **Approve** confirms the translation as it is. **Add comment** leaves a note without changing anything.
+- The **History** shows the AI translation and every correction, approval and comment with who made it.
+
+![A text being corrected: original, translation, comment and history](images/extension-detail.png)
+
+The website shows a correction after the page is next updated in the CMS (when the editors translate it again); the review doesn't change the live site by itself.

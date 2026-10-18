@@ -11,6 +11,7 @@
 - **No backtracking regexes on uploaded or reviewer content:** documents and corrections go through the linear tokenizer in `packages/shared/src/html.ts`; keep the timing cases in the hardening tests passing.
 - `packages/shared/src/text.ts` defines how page texts match stored texts; changing it needs a migration that recomputes `served_text` and `source_text`.
 - The test copies in `apps/proxy/test/` (stand-in, languages, TypeScript SDK) are never edited: `apps/proxy/scripts/vendor-test-deps.sh [ref]`.
+- **The extension never inserts page or proxy content as HTML** (textContent and textarea values only), asks for host access per review site only (`optional_host_permissions`), and its `--e2e` build (local hosts pre-granted) is never released. Its UI texts live in `apps/extension/static/_locales/{en,de,fr,it}`: new or changed strings get all four languages in the same commit (formal address; *Supertext* and URLs untranslated). Before committing extension changes also run `npm run test:e2e --workspace apps/extension`.
 - UI changes: regenerate the screenshots (`docs/DEVELOPER.md` → *Screenshots*). The staff UI stays in English; the extension's UI will be in English, German, French and Italian.
 - Every staff page and server action calls `requireAuth()`; only `/v1/*`, `/api/review/*`, `/api/usage` (its own token), `/review`, `/health` and `/login` are public. `/api/usage` is for the Commando Center and carries usage only, never translations, sites or links.
 

@@ -1,0 +1,228 @@
+{
+  "extName": {
+    "message": "Supertext Localization Review"
+  },
+  "extDescription": {
+    "message": "Review a website's translations in context: original and translation side by side, correct texts directly."
+  },
+  "connectTitle": {
+    "message": "Start reviewing"
+  },
+  "connectHelp": {
+    "message": "Paste the review link you received from Supertext (it starts with https:// and contains /review#)."
+  },
+  "connectLinkLabel": {
+    "message": "Review link"
+  },
+  "connectButton": {
+    "message": "Connect"
+  },
+  "errorBadLink": {
+    "message": "This isn't a review link. Copy the whole link from the email or message."
+  },
+  "errorPermission": {
+    "message": "The extension needs permission to read the review service and the website. Click Connect again and allow it."
+  },
+  "errorUnauthorized": {
+    "message": "This review link is not valid. Ask Supertext for a new one."
+  },
+  "errorExpired": {
+    "message": "This review link has expired. Ask Supertext for a new one."
+  },
+  "errorRevoked": {
+    "message": "This review link was revoked. Ask Supertext for a new one."
+  },
+  "errorNetwork": {
+    "message": "The review service can't be reached. Check your connection and try again."
+  },
+  "errorGeneric": {
+    "message": "Something went wrong: $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorMarkup": {
+    "message": "The correction changes the formatting or links, which isn't allowed. Keep the tags as they are and only change the words."
+  },
+  "errorReviewer": {
+    "message": "Enter your name first, so Supertext knows who made the change."
+  },
+  "site": {
+    "message": "Website"
+  },
+  "language": {
+    "message": "Language"
+  },
+  "validUntil": {
+    "message": "Valid until"
+  },
+  "roleCustomer": {
+    "message": "Customer"
+  },
+  "roleLinguist": {
+    "message": "Supertext linguist"
+  },
+  "reviewerLabel": {
+    "message": "Your name"
+  },
+  "openSideBySide": {
+    "message": "Open side by side"
+  },
+  "openSite": {
+    "message": "Open the website"
+  },
+  "rescan": {
+    "message": "Check page again"
+  },
+  "syncScroll": {
+    "message": "Scroll together"
+  },
+  "reviewMode": {
+    "message": "Select texts by clicking (links don't open)"
+  },
+  "disconnect": {
+    "message": "Disconnect"
+  },
+  "splitHint": {
+    "message": "Your Chrome can't open the pages side by side by itself. Press Shift+Alt+N (Mac: Cmd+Option+N), or right-click the tab and choose the split view entry."
+  },
+  "noPrefixHint": {
+    "message": "Open the original and the translated page yourself; the extension recognizes them when both are side by side."
+  },
+  "notOnSite": {
+    "message": "Open a page of the website to start."
+  },
+  "sideOriginal": {
+    "message": "Original"
+  },
+  "sideTranslation": {
+    "message": "Translation"
+  },
+  "tabPage": {
+    "message": "On this page ($COUNT$)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "tabUnmatched": {
+    "message": "Not matched ($COUNT$)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "tabInvisible": {
+    "message": "Invisible texts ($COUNT$)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "emptyPage": {
+    "message": "No translated texts found on this page yet."
+  },
+  "emptyUnmatched": {
+    "message": "Every text on this page belongs to a translation."
+  },
+  "emptyInvisible": {
+    "message": "No invisible texts on this page."
+  },
+  "unmatchedUntranslated": {
+    "message": "Not translated: the page shows the original text."
+  },
+  "unmatchedOther": {
+    "message": "Not from the translated content: probably the theme, a template, a script or content that was never sent for translation."
+  },
+  "statusAi": {
+    "message": "AI"
+  },
+  "statusCorrected": {
+    "message": "Corrected"
+  },
+  "statusApproved": {
+    "message": "Approved"
+  },
+  "original": {
+    "message": "Original"
+  },
+  "translation": {
+    "message": "Translation"
+  },
+  "markupHint": {
+    "message": "This text has formatting or links. Change only the words between the tags."
+  },
+  "save": {
+    "message": "Save correction"
+  },
+  "approve": {
+    "message": "Approve"
+  },
+  "commentLabel": {
+    "message": "Comment (optional)"
+  },
+  "addComment": {
+    "message": "Add comment"
+  },
+  "saved": {
+    "message": "Saved. The website shows it after the next update of this page in the CMS."
+  },
+  "approved": {
+    "message": "Approved."
+  },
+  "commented": {
+    "message": "Comment added."
+  },
+  "history": {
+    "message": "History"
+  },
+  "historyAi": {
+    "message": "AI translation"
+  },
+  "historyCorrection": {
+    "message": "Correction by $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyApproval": {
+    "message": "Approved by $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyComment": {
+    "message": "Comment by $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "selectHint": {
+    "message": "Click a highlighted text on the page or in the list to review it."
+  },
+  "back": {
+    "message": "Back to the list"
+  },
+  "severalSources": {
+    "message": "This text appears with $COUNT$ different originals.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "scanning": {
+    "message": "Checking the page…"
+  }
+}
