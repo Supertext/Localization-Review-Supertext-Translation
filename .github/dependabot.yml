@@ -1,0 +1,31 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    # Versions we can't take yet (see docs/DEVELOPER.md → Dependency updates):
+    ignore:
+      - dependency-name: "typescript"  # TypeScript 7 is the native compiler; Next.js's type checking still needs 5.x
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/node"  # types must match the Node version the image runs (22), not the newest
+        update-types: ["version-update:semver-major"]
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "node"  # stays on the Node 22 LTS line; move by hand together with @types/node
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns: ["*"]

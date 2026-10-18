@@ -1,0 +1,16 @@
+# Changelog
+
+All notable changes to this project are documented here. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [Unreleased]
+
+### Added
+
+- **Translation proxy** (`apps/proxy`): speaks the Supertext AI file translation API v1 under `/v1/`, so plugins switch by changing their API URL; the integration tests drive it with the Supertext SDK's own client. The plugin's API key is forwarded to Supertext and never stored; its SHA-256 fingerprint is the tenant.
+- **Translation memory:** every segment (`data-st-id` element) is stored per tenant, language pair and politeness with the AI translation as first received. Repeats are answered from the memory without a Supertext call; documents with some new texts upload only those (or the whole document when it has text outside segments). Supertext's errors reach the plugin unchanged. Before answering from the memory alone, the key is rechecked with Supertext at least every 10 minutes.
+- **Review API** (`/api/review/…`) for the Chrome extension: session, matching page texts to segments (by translation or source), segment details with history, corrections, approvals and comments. Corrections may only use the source's markup and are served on the plugin's next request.
+- **Review links** per site, target language and role (customer or Supertext linguist), signed with `REVIEW_LINK_SECRET`, with expiry and revocation, and a public page explaining how to start.
+- **Staff pages** (shared password `REVIEW_ADMIN_PASSWORD`): tenants with labels and notes, each tenant's translation memory with filters and search, review sites with language path prefixes, and their links. Supertext's look, as in the Commando Center.
+- Hardening after an independent security review: documents and corrections are read with a linear HTML tokenizer (crafted uploads can't stall the proxy); corrections must be well-nested, use only the source's or AI answer's tags and never script-like elements or entity-smuggled markup; script, style and other raw-text elements are never segments; documents without segments or with loose text always go to Supertext whole; a finished job is downloaded once however many polls arrive; unexpected failures answer 503 in Supertext's error shape; uploads are capped before parsing; review link tokens moved into the URL fragment; failed logins from anywhere are slowed down past 100 in 15 minutes.
+- `packages/shared`: an HTML tokenizer, segment scanning, text normalization, markup rules and review API types, shared by the proxy and the coming extension.
+- Docker image for Railway with `/health` and migrations at every start (`REVIEW_DB_NAME` creates an own database on a shared server); installation, user and developer guides with screenshots; unit and integration tests, image check and CI.

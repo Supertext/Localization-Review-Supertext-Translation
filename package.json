@@ -1,0 +1,28 @@
+{
+  "name": "localization-review-supertext-translation",
+  "version": "0.1.0",
+  "description": "Supertext localization review: a translation proxy between the Supertext plugins and the Supertext AI API, and a Chrome extension for reviewing translations in context.",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm test --workspaces --if-present",
+    "test:integration": "npm run test:integration --workspace apps/proxy",
+    "dev": "npm run dev --workspace apps/proxy",
+    "build": "npm run build --workspace apps/proxy"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "playwright": "^1.64.0",
+    "typescript": "5.9.3",
+    "vitest": "5.0.4"
+  }
+}

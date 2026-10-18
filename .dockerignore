@@ -1,0 +1,11 @@
+**/node_modules
+**/.next
+.git
+.github
+docs
+test-results
+*.log
+.env
+.env.*
+apps/proxy/test
+apps/extension

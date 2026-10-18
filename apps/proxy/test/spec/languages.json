@@ -1,0 +1,892 @@
+{
+  "description": "Languages of the Supertext AI file translation API v1, from GET features on the live API (October 2026). Source codes are bare languages, target codes are what Supertext expects exactly: regional for German, English, French, Italian and Portuguese (de-CH, en-US, pt-BR), a script for Chinese and Serbian (zh-Hans, sr-Latn), a dialect for Swiss German (gsw-u-sd-chzh), bare for the others (es, nl, sl). An integration maps its CMS languages to these codes (a combo box per language, the suggested code preselected); a language nobody mapped gets a default where one is obvious, anything else is an error. 'match': a CMS code that equals a supported code apart from case, '_' for '-' and surrounding spaces gives that code; anything else gives null. 'defaultTargets': the default target for a bare language that Supertext offers only with a region or script: de-DE, en-US, fr-FR, it-IT and pt-PT (the language's home country), zh-Hans (simplified, the most used script) and sr-Latn (as decided for the plugins). Swiss German gets no default: Supertext offers two dialects (gsw-u-sd-chzh, gsw-u-sd-chbe) and neither is the obvious one; no other bare language lacks a bare target. 'defaultTarget': the default for a CMS code without an exact match, compared like 'match': (1) a bare language: its 'defaultTargets' entry, else null; (2) Chinese with a region: zh-TW, zh-HK, zh-MO give zh-Hant, zh-CN, zh-SG give zh-Hans, other regions null; (3) language-Script-REGION whose language-Script is a target gives that target (zh-Hant-TW → zh-Hant, sr-Latn-RS → sr-Latn); (4) language-REGION (two letters or three digits) whose bare language is a target gives the bare target (es-ES, es-419 → es, nl_NL → nl, nb-NO → nb); (5) anything else null: a region of a language Supertext offers only regionally that isn't in the list (de-LI, en-IE, fr-BE, pt-AO, sr-RS, gsw-CH) gets no default, a region is never guessed; codes with more parts (de_DE_formal) need a mapping. A code with an exact match has no default (null). 'suggestTarget': the exact match, else the default, else null (what a settings screen preselects). 'matchSource': exact match as for targets; else, if the code's first subtag (before '-' or '_') is a supported source, that source (source codes have no regions, so en-US as a source is en); else null. 'resolve': the code to send for a CMS code and the integration's mapping (keys compared like 'match'; a non-blank value is sent trimmed and otherwise unchanged, even if it isn't in the list, so a language Supertext adds later can be used before the SDK knows it); for targets: the mapping, else the exact match, else the default, else the error unsupported_language (nothing is sent). For the source, a mapped value is turned into its source form with matchSource (so one mapping serves both directions: {\"de\":\"de-CH\"} sends source de, target de-CH); a mapped value matchSource doesn't know is sent as it is; no mapping: matchSource, else unsupported_language. An empty source stays empty (auto-detect). 'targetOptions': the targets sorted by English name (ordinal comparison), for the combo box; integrations show the name localized where the platform can (Intl.DisplayNames, Locale.getDisplayName, CultureInfo, Babel, Symfony Intl) and the code next to it. 'politeness': whether the target supports politeness more/less; the API answers HTTP 400 FEATURE_ERROR (unsupported_feature) otherwise. Integrations hide the formal/informal choice for those targets; the SDK sends what it is given.",
+  "sources": [
+    {
+      "code": "bg",
+      "name": "Bulgarian"
+    },
+    {
+      "code": "cs",
+      "name": "Czech"
+    },
+    {
+      "code": "da",
+      "name": "Danish"
+    },
+    {
+      "code": "de",
+      "name": "German"
+    },
+    {
+      "code": "el",
+      "name": "Greek"
+    },
+    {
+      "code": "en",
+      "name": "English"
+    },
+    {
+      "code": "es",
+      "name": "Spanish"
+    },
+    {
+      "code": "fi",
+      "name": "Finnish"
+    },
+    {
+      "code": "fr",
+      "name": "French"
+    },
+    {
+      "code": "gsw",
+      "name": "Swiss German"
+    },
+    {
+      "code": "hr",
+      "name": "Croatian"
+    },
+    {
+      "code": "hu",
+      "name": "Hungarian"
+    },
+    {
+      "code": "it",
+      "name": "Italian"
+    },
+    {
+      "code": "ja",
+      "name": "Japanese"
+    },
+    {
+      "code": "ko",
+      "name": "Korean"
+    },
+    {
+      "code": "nb",
+      "name": "Norwegian Bokmål"
+    },
+    {
+      "code": "nl",
+      "name": "Dutch"
+    },
+    {
+      "code": "pl",
+      "name": "Polish"
+    },
+    {
+      "code": "pt",
+      "name": "Portuguese"
+    },
+    {
+      "code": "rm",
+      "name": "Romansh"
+    },
+    {
+      "code": "ru",
+      "name": "Russian"
+    },
+    {
+      "code": "sk",
+      "name": "Slovak"
+    },
+    {
+      "code": "sl",
+      "name": "Slovenian"
+    },
+    {
+      "code": "sq",
+      "name": "Albanian"
+    },
+    {
+      "code": "sr",
+      "name": "Serbian"
+    },
+    {
+      "code": "sv",
+      "name": "Swedish"
+    },
+    {
+      "code": "tr",
+      "name": "Turkish"
+    },
+    {
+      "code": "zh",
+      "name": "Chinese"
+    }
+  ],
+  "targets": [
+    {
+      "code": "bg",
+      "name": "Bulgarian",
+      "politeness": true
+    },
+    {
+      "code": "cs",
+      "name": "Czech",
+      "politeness": true
+    },
+    {
+      "code": "da",
+      "name": "Danish",
+      "politeness": true
+    },
+    {
+      "code": "de-AT",
+      "name": "German (Austria)",
+      "politeness": true
+    },
+    {
+      "code": "de-CH",
+      "name": "German (Switzerland)",
+      "politeness": true
+    },
+    {
+      "code": "de-DE",
+      "name": "German (Germany)",
+      "politeness": true
+    },
+    {
+      "code": "el",
+      "name": "Greek",
+      "politeness": true
+    },
+    {
+      "code": "en-GB",
+      "name": "English (United Kingdom)",
+      "politeness": false
+    },
+    {
+      "code": "en-US",
+      "name": "English (United States)",
+      "politeness": false
+    },
+    {
+      "code": "es",
+      "name": "Spanish",
+      "politeness": true
+    },
+    {
+      "code": "fi",
+      "name": "Finnish",
+      "politeness": true
+    },
+    {
+      "code": "fr-CH",
+      "name": "French (Switzerland)",
+      "politeness": true
+    },
+    {
+      "code": "fr-FR",
+      "name": "French (France)",
+      "politeness": true
+    },
+    {
+      "code": "gsw-u-sd-chbe",
+      "name": "Swiss German (Bern)",
+      "politeness": false
+    },
+    {
+      "code": "gsw-u-sd-chzh",
+      "name": "Swiss German (Zurich)",
+      "politeness": false
+    },
+    {
+      "code": "hr",
+      "name": "Croatian",
+      "politeness": true
+    },
+    {
+      "code": "hu",
+      "name": "Hungarian",
+      "politeness": true
+    },
+    {
+      "code": "it-CH",
+      "name": "Italian (Switzerland)",
+      "politeness": true
+    },
+    {
+      "code": "it-IT",
+      "name": "Italian (Italy)",
+      "politeness": true
+    },
+    {
+      "code": "ja",
+      "name": "Japanese",
+      "politeness": true
+    },
+    {
+      "code": "ko",
+      "name": "Korean",
+      "politeness": true
+    },
+    {
+      "code": "nb",
+      "name": "Norwegian Bokmål",
+      "politeness": true
+    },
+    {
+      "code": "nl",
+      "name": "Dutch",
+      "politeness": true
+    },
+    {
+      "code": "pl",
+      "name": "Polish",
+      "politeness": true
+    },
+    {
+      "code": "pt-BR",
+      "name": "Portuguese (Brazil)",
+      "politeness": true
+    },
+    {
+      "code": "pt-PT",
+      "name": "Portuguese (Portugal)",
+      "politeness": true
+    },
+    {
+      "code": "rm",
+      "name": "Romansh",
+      "politeness": false
+    },
+    {
+      "code": "ru",
+      "name": "Russian",
+      "politeness": true
+    },
+    {
+      "code": "sk",
+      "name": "Slovak",
+      "politeness": true
+    },
+    {
+      "code": "sl",
+      "name": "Slovenian",
+      "politeness": true
+    },
+    {
+      "code": "sq",
+      "name": "Albanian",
+      "politeness": false
+    },
+    {
+      "code": "sr-Cyrl",
+      "name": "Serbian (Cyrillic)",
+      "politeness": false
+    },
+    {
+      "code": "sr-Latn",
+      "name": "Serbian (Latin)",
+      "politeness": false
+    },
+    {
+      "code": "sv",
+      "name": "Swedish",
+      "politeness": true
+    },
+    {
+      "code": "tr",
+      "name": "Turkish",
+      "politeness": true
+    },
+    {
+      "code": "zh-Hans",
+      "name": "Chinese (Simplified)",
+      "politeness": true
+    },
+    {
+      "code": "zh-Hant",
+      "name": "Chinese (Traditional)",
+      "politeness": true
+    }
+  ],
+  "defaultTargets": {
+    "de": "de-DE",
+    "en": "en-US",
+    "fr": "fr-FR",
+    "it": "it-IT",
+    "pt": "pt-PT",
+    "sr": "sr-Latn",
+    "zh": "zh-Hans"
+  },
+  "matchTarget": [
+    {
+      "in": "de-CH",
+      "out": "de-CH"
+    },
+    {
+      "in": "de_ch",
+      "out": "de-CH"
+    },
+    {
+      "in": " DE-ch ",
+      "out": "de-CH"
+    },
+    {
+      "in": "es",
+      "out": "es"
+    },
+    {
+      "in": "ES",
+      "out": "es"
+    },
+    {
+      "in": "zh_hant",
+      "out": "zh-Hant"
+    },
+    {
+      "in": "sr-latn",
+      "out": "sr-Latn"
+    },
+    {
+      "in": "GSW-U-SD-CHZH",
+      "out": "gsw-u-sd-chzh"
+    },
+    {
+      "in": "pt_BR",
+      "out": "pt-BR"
+    },
+    {
+      "in": "de",
+      "out": null
+    },
+    {
+      "in": "en",
+      "out": null
+    },
+    {
+      "in": "es-ES",
+      "out": null
+    },
+    {
+      "in": "sl-SI",
+      "out": null
+    },
+    {
+      "in": "zh-CN",
+      "out": null
+    },
+    {
+      "in": "zh",
+      "out": null
+    },
+    {
+      "in": "de_DE_formal",
+      "out": null
+    },
+    {
+      "in": "xx",
+      "out": null
+    },
+    {
+      "in": "",
+      "out": null
+    },
+    {
+      "in": "  ",
+      "out": null
+    }
+  ],
+  "matchSource": [
+    {
+      "in": "en",
+      "out": "en"
+    },
+    {
+      "in": "EN",
+      "out": "en"
+    },
+    {
+      "in": "en-US",
+      "out": "en"
+    },
+    {
+      "in": "en_GB",
+      "out": "en"
+    },
+    {
+      "in": "de-CH",
+      "out": "de"
+    },
+    {
+      "in": "zh-Hant",
+      "out": "zh"
+    },
+    {
+      "in": "gsw-u-sd-chzh",
+      "out": "gsw"
+    },
+    {
+      "in": "de_DE_formal",
+      "out": "de"
+    },
+    {
+      "in": "xx",
+      "out": null
+    },
+    {
+      "in": "xx-YY",
+      "out": null
+    },
+    {
+      "in": "",
+      "out": null
+    }
+  ],
+  "resolveTarget": [
+    {
+      "in": "de-CH",
+      "out": "de-CH"
+    },
+    {
+      "in": "de",
+      "out": "de-DE"
+    },
+    {
+      "in": "de",
+      "mapping": {
+        "de": "de-CH"
+      },
+      "out": "de-CH"
+    },
+    {
+      "in": "de_ch",
+      "mapping": {
+        "de-CH": "de-DE"
+      },
+      "out": "de-DE"
+    },
+    {
+      "in": "no",
+      "mapping": {
+        "no": "nb"
+      },
+      "out": "nb"
+    },
+    {
+      "in": "es",
+      "mapping": {
+        "de": "de-CH"
+      },
+      "out": "es"
+    },
+    {
+      "in": "de",
+      "mapping": {
+        "de": "  "
+      },
+      "out": "de-DE"
+    },
+    {
+      "in": "en",
+      "mapping": {
+        "fr": "fr-CH"
+      },
+      "out": "en-US"
+    },
+    {
+      "in": "es-ES",
+      "out": "es"
+    },
+    {
+      "in": "zh-TW",
+      "out": "zh-Hant"
+    },
+    {
+      "in": "en-IE",
+      "error": "unsupported_language"
+    },
+    {
+      "in": "en-IE",
+      "mapping": {
+        "en-IE": "en-GB"
+      },
+      "out": "en-GB"
+    },
+    {
+      "in": "de-LI",
+      "error": "unsupported_language"
+    },
+    {
+      "in": "gsw",
+      "error": "unsupported_language"
+    },
+    {
+      "in": "no",
+      "error": "unsupported_language"
+    },
+    {
+      "in": "xx",
+      "error": "unsupported_language"
+    },
+    {
+      "in": "xx",
+      "mapping": {
+        "xx": " xx-YY "
+      },
+      "out": "xx-YY"
+    },
+    {
+      "in": "",
+      "error": "unsupported_language"
+    }
+  ],
+  "resolveSource": [
+    {
+      "in": "en-US",
+      "out": "en"
+    },
+    {
+      "in": "",
+      "out": ""
+    },
+    {
+      "in": "  ",
+      "out": ""
+    },
+    {
+      "in": "xx",
+      "error": "unsupported_language"
+    },
+    {
+      "in": "gsw-CH",
+      "mapping": {
+        "gsw-CH": "gsw"
+      },
+      "out": "gsw"
+    },
+    {
+      "in": "de",
+      "mapping": {
+        "de": "fr"
+      },
+      "out": "fr"
+    },
+    {
+      "in": "de",
+      "mapping": {
+        "de": "de-CH"
+      },
+      "out": "de"
+    },
+    {
+      "in": "en",
+      "mapping": {
+        "en": "en-US"
+      },
+      "out": "en"
+    },
+    {
+      "in": "zh-CN",
+      "mapping": {
+        "zh-CN": "zh-Hans"
+      },
+      "out": "zh"
+    },
+    {
+      "in": "xx",
+      "mapping": {
+        "xx": " xx-YY "
+      },
+      "out": "xx-YY"
+    }
+  ],
+  "supportsPoliteness": [
+    {
+      "in": "de-CH",
+      "out": true
+    },
+    {
+      "in": "es",
+      "out": true
+    },
+    {
+      "in": "en-US",
+      "out": false
+    },
+    {
+      "in": "rm",
+      "out": false
+    },
+    {
+      "in": "de_ch",
+      "out": true
+    },
+    {
+      "in": "xx",
+      "out": null
+    }
+  ],
+  "defaultTarget": [
+    {
+      "in": "de",
+      "out": "de-DE"
+    },
+    {
+      "in": "DE",
+      "out": "de-DE"
+    },
+    {
+      "in": "en",
+      "out": "en-US"
+    },
+    {
+      "in": "fr",
+      "out": "fr-FR"
+    },
+    {
+      "in": "it",
+      "out": "it-IT"
+    },
+    {
+      "in": "pt",
+      "out": "pt-PT"
+    },
+    {
+      "in": "zh",
+      "out": "zh-Hans"
+    },
+    {
+      "in": "sr",
+      "out": "sr-Latn"
+    },
+    {
+      "in": " de ",
+      "out": "de-DE"
+    },
+    {
+      "in": "es-ES",
+      "out": "es"
+    },
+    {
+      "in": "es_MX",
+      "out": "es"
+    },
+    {
+      "in": "es-419",
+      "out": "es"
+    },
+    {
+      "in": "nl_NL",
+      "out": "nl"
+    },
+    {
+      "in": "sl-SI",
+      "out": "sl"
+    },
+    {
+      "in": "cs-CZ",
+      "out": "cs"
+    },
+    {
+      "in": "nb-NO",
+      "out": "nb"
+    },
+    {
+      "in": "ja-JP",
+      "out": "ja"
+    },
+    {
+      "in": "zh-TW",
+      "out": "zh-Hant"
+    },
+    {
+      "in": "zh_HK",
+      "out": "zh-Hant"
+    },
+    {
+      "in": "zh-MO",
+      "out": "zh-Hant"
+    },
+    {
+      "in": "zh-CN",
+      "out": "zh-Hans"
+    },
+    {
+      "in": "zh-SG",
+      "out": "zh-Hans"
+    },
+    {
+      "in": "zh-MY",
+      "out": null
+    },
+    {
+      "in": "zh-Hant-TW",
+      "out": "zh-Hant"
+    },
+    {
+      "in": "zh_hans_cn",
+      "out": "zh-Hans"
+    },
+    {
+      "in": "sr-Latn-RS",
+      "out": "sr-Latn"
+    },
+    {
+      "in": "sr-Cyrl-RS",
+      "out": "sr-Cyrl"
+    },
+    {
+      "in": "de-LI",
+      "out": null
+    },
+    {
+      "in": "en-IE",
+      "out": null
+    },
+    {
+      "in": "en-AU",
+      "out": null
+    },
+    {
+      "in": "fr-BE",
+      "out": null
+    },
+    {
+      "in": "fr-LU",
+      "out": null
+    },
+    {
+      "in": "it-SM",
+      "out": null
+    },
+    {
+      "in": "pt-AO",
+      "out": null
+    },
+    {
+      "in": "sr-RS",
+      "out": null
+    },
+    {
+      "in": "gsw",
+      "out": null
+    },
+    {
+      "in": "gsw-CH",
+      "out": null
+    },
+    {
+      "in": "no",
+      "out": null
+    },
+    {
+      "in": "de_DE_formal",
+      "out": null
+    },
+    {
+      "in": "de-CH",
+      "out": null
+    },
+    {
+      "in": "es",
+      "out": null
+    },
+    {
+      "in": "xx",
+      "out": null
+    },
+    {
+      "in": "xx-YY",
+      "out": null
+    },
+    {
+      "in": "",
+      "out": null
+    },
+    {
+      "in": "  ",
+      "out": null
+    }
+  ],
+  "suggestTarget": [
+    {
+      "in": "de-CH",
+      "out": "de-CH"
+    },
+    {
+      "in": "de_ch",
+      "out": "de-CH"
+    },
+    {
+      "in": "es",
+      "out": "es"
+    },
+    {
+      "in": "de",
+      "out": "de-DE"
+    },
+    {
+      "in": "en",
+      "out": "en-US"
+    },
+    {
+      "in": "es-ES",
+      "out": "es"
+    },
+    {
+      "in": "zh-TW",
+      "out": "zh-Hant"
+    },
+    {
+      "in": "pt_BR",
+      "out": "pt-BR"
+    },
+    {
+      "in": "en-IE",
+      "out": null
+    },
+    {
+      "in": "gsw",
+      "out": null
+    },
+    {
+      "in": "xx",
+      "out": null
+    },
+    {
+      "in": "",
+      "out": null
+    }
+  ],
+  "targetOptions": [
+    "sq",
+    "bg",
+    "zh-Hans",
+    "zh-Hant",
+    "hr",
+    "cs",
+    "da",
+    "nl",
+    "en-GB",
+    "en-US",
+    "fi",
+    "fr-FR",
+    "fr-CH",
+    "de-AT",
+    "de-DE",
+    "de-CH",
+    "el",
+    "hu",
+    "it-IT",
+    "it-CH",
+    "ja",
+    "ko",
+    "nb",
+    "pl",
+    "pt-BR",
+    "pt-PT",
+    "rm",
+    "ru",
+    "sr-Cyrl",
+    "sr-Latn",
+    "sk",
+    "sl",
+    "es",
+    "sv",
+    "gsw-u-sd-chbe",
+    "gsw-u-sd-chzh",
+    "tr"
+  ]
+}

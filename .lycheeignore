@@ -1,0 +1,5 @@
+# Local URLs and placeholders in the docs
+^https?://(localhost|127\.0\.0\.1)
+^https?://<
+^https://review-proxy\.example\.com
+^https://www\.alpenblick\.example\.ch

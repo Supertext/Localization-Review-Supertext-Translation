@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - name: "Unit tests (shared package and proxy)"
+        run: npm test
+      - name: "Integration tests (Postgres 16, Supertext stand-in, SDK client)"
+        run: npm run test:integration
+        env:
+          TEST_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+      - name: "Bundled test copies are unchanged"
+        run: |
+          set -euo pipefail
+          SDK_COMMIT=$(cat apps/proxy/test/sdk/COMMIT)
+          git clone --quiet https://github.com/Supertext/Supertext-API-SDK-and-Guide "$RUNNER_TEMP/sdk"
+          git -C "$RUNNER_TEMP/sdk" checkout --quiet "$SDK_COMMIT"
+          SDK_DIR="$RUNNER_TEMP/sdk" apps/proxy/scripts/vendor-test-deps.sh
+          git diff --exit-code -- apps/proxy/test
+
+  image:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build the image
+        run: docker build -t review-proxy .
+      - name: "Start it twice on a shared server and check health, login and a translation"
+        run: apps/proxy/test/image-check.sh
+      - if: failure()
+        run: docker logs review-proxy 2>&1 | tail -100

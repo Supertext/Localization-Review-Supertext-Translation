@@ -1,0 +1,213 @@
+/**
+ * Languages of the Supertext AI file translation API v1 (spec/languages.json, from the live
+ * `GET features`, October 2026). An integration maps its CMS languages to these codes (a combo
+ * box per language, `suggestTarget()` preselected); a CMS code that equals a Supertext code
+ * (apart from case and `_`/`-`) is used as it is, a bare language Supertext offers only with a
+ * region or script gets its default (`de` → `de-DE`, see `DEFAULT_TARGETS`), a region of a bare
+ * target is dropped (`es-ES` → `es`), and anything else is an `unsupported_language` error until
+ * the administrator maps it. For the live list, use `SupertextClient.getFeatures()`.
+ */
+import { SupertextError } from './errors.js'
+
+export interface SourceLanguage {
+  readonly code: string
+  /** English name. */
+  readonly name: string
+}
+
+export interface TargetLanguage extends SourceLanguage {
+  /** Whether formal/informal (`politeness: more | less`) is offered. Otherwise the API answers FEATURE_ERROR. */
+  readonly politeness: boolean
+}
+
+const freeze = <T extends object>(list: T[]): readonly Readonly<T>[] => Object.freeze(list.map((item) => Object.freeze(item)))
+
+/** Source languages (bare codes). */
+export const SOURCE_LANGUAGES: readonly SourceLanguage[] = freeze([
+  { code: 'bg', name: 'Bulgarian' }, { code: 'cs', name: 'Czech' }, { code: 'da', name: 'Danish' }, { code: 'de', name: 'German' },
+  { code: 'el', name: 'Greek' }, { code: 'en', name: 'English' }, { code: 'es', name: 'Spanish' }, { code: 'fi', name: 'Finnish' },
+  { code: 'fr', name: 'French' }, { code: 'gsw', name: 'Swiss German' }, { code: 'hr', name: 'Croatian' }, { code: 'hu', name: 'Hungarian' },
+  { code: 'it', name: 'Italian' }, { code: 'ja', name: 'Japanese' }, { code: 'ko', name: 'Korean' }, { code: 'nb', name: 'Norwegian Bokmål' },
+  { code: 'nl', name: 'Dutch' }, { code: 'pl', name: 'Polish' }, { code: 'pt', name: 'Portuguese' }, { code: 'rm', name: 'Romansh' },
+  { code: 'ru', name: 'Russian' }, { code: 'sk', name: 'Slovak' }, { code: 'sl', name: 'Slovenian' }, { code: 'sq', name: 'Albanian' },
+  { code: 'sr', name: 'Serbian' }, { code: 'sv', name: 'Swedish' }, { code: 'tr', name: 'Turkish' }, { code: 'zh', name: 'Chinese' },
+])
+
+/** Target languages, exactly as Supertext expects them. */
+export const TARGET_LANGUAGES: readonly TargetLanguage[] = freeze([
+  { code: 'bg', name: 'Bulgarian', politeness: true },
+  { code: 'cs', name: 'Czech', politeness: true },
+  { code: 'da', name: 'Danish', politeness: true },
+  { code: 'de-AT', name: 'German (Austria)', politeness: true },
+  { code: 'de-CH', name: 'German (Switzerland)', politeness: true },
+  { code: 'de-DE', name: 'German (Germany)', politeness: true },
+  { code: 'el', name: 'Greek', politeness: true },
+  { code: 'en-GB', name: 'English (United Kingdom)', politeness: false },
+  { code: 'en-US', name: 'English (United States)', politeness: false },
+  { code: 'es', name: 'Spanish', politeness: true },
+  { code: 'fi', name: 'Finnish', politeness: true },
+  { code: 'fr-CH', name: 'French (Switzerland)', politeness: true },
+  { code: 'fr-FR', name: 'French (France)', politeness: true },
+  { code: 'gsw-u-sd-chbe', name: 'Swiss German (Bern)', politeness: false },
+  { code: 'gsw-u-sd-chzh', name: 'Swiss German (Zurich)', politeness: false },
+  { code: 'hr', name: 'Croatian', politeness: true },
+  { code: 'hu', name: 'Hungarian', politeness: true },
+  { code: 'it-CH', name: 'Italian (Switzerland)', politeness: true },
+  { code: 'it-IT', name: 'Italian (Italy)', politeness: true },
+  { code: 'ja', name: 'Japanese', politeness: true },
+  { code: 'ko', name: 'Korean', politeness: true },
+  { code: 'nb', name: 'Norwegian Bokmål', politeness: true },
+  { code: 'nl', name: 'Dutch', politeness: true },
+  { code: 'pl', name: 'Polish', politeness: true },
+  { code: 'pt-BR', name: 'Portuguese (Brazil)', politeness: true },
+  { code: 'pt-PT', name: 'Portuguese (Portugal)', politeness: true },
+  { code: 'rm', name: 'Romansh', politeness: false },
+  { code: 'ru', name: 'Russian', politeness: true },
+  { code: 'sk', name: 'Slovak', politeness: true },
+  { code: 'sl', name: 'Slovenian', politeness: true },
+  { code: 'sq', name: 'Albanian', politeness: false },
+  { code: 'sr-Cyrl', name: 'Serbian (Cyrillic)', politeness: false },
+  { code: 'sr-Latn', name: 'Serbian (Latin)', politeness: false },
+  { code: 'sv', name: 'Swedish', politeness: true },
+  { code: 'tr', name: 'Turkish', politeness: true },
+  { code: 'zh-Hans', name: 'Chinese (Simplified)', politeness: true },
+  { code: 'zh-Hant', name: 'Chinese (Traditional)', politeness: true },
+])
+
+/**
+ * The default target of a bare language that Supertext offers only with a region or script.
+ * Swiss German (`gsw`) has none: neither dialect is the obvious one.
+ */
+export const DEFAULT_TARGETS: Readonly<Record<string, string>> = Object.freeze({
+  de: 'de-DE',
+  en: 'en-US',
+  fr: 'fr-FR',
+  it: 'it-IT',
+  pt: 'pt-PT',
+  sr: 'sr-Latn',
+  zh: 'zh-Hans',
+})
+
+/** CMS language → Supertext code, e.g. `{ de: 'de-CH', no: 'nb' }` (the integration's language setting). */
+export type LanguageMapping = Readonly<Record<string, string>>
+
+/** Case, `_` vs `-` and surrounding spaces don't matter when comparing codes. */
+const key = (code: string): string => code.trim().replace(/_/g, '-').toLowerCase()
+
+const SOURCES = new Map(SOURCE_LANGUAGES.map((l) => [key(l.code), l]))
+const TARGETS = new Map(TARGET_LANGUAGES.map((l) => [key(l.code), l]))
+
+/** The supported target that equals `code` (apart from case and `_`/`-`), else null. `de` → null, `de_ch` → `de-CH`. */
+export function matchTarget(code: string): string | null {
+  return TARGETS.get(key(code))?.code ?? null
+}
+
+const DEFAULTS = new Map(Object.entries(DEFAULT_TARGETS))
+const CHINESE_REGIONS = new Map([['tw', 'zh-Hant'], ['hk', 'zh-Hant'], ['mo', 'zh-Hant'], ['cn', 'zh-Hans'], ['sg', 'zh-Hans']])
+
+/**
+ * The default target for a CMS code that has no exact match, else null: a bare language's
+ * `DEFAULT_TARGETS` entry (`de` → `de-DE`), Chinese regions (`zh-TW` → `zh-Hant`, `zh-CN` → `zh-Hans`),
+ * `language-Script-REGION` (`sr-Latn-RS` → `sr-Latn`) and `language-REGION` of a bare target
+ * (`es-ES` → `es`). Never a guessed region: `en-IE`, `de-LI` → null.
+ */
+export function defaultTarget(code: string): string | null {
+  const k = key(code)
+  if (k === '' || TARGETS.has(k)) return null
+  const parts = k.split('-')
+  const lang = parts[0]!
+  if (parts.length === 1) return DEFAULTS.get(lang) ?? null
+  if (parts.length === 2 && lang === 'zh') return CHINESE_REGIONS.get(parts[1]!) ?? null
+  if (parts.length === 3 && /^[a-z]{4}$/.test(parts[1]!) && isRegion(parts[2]!)) return TARGETS.get(`${lang}-${parts[1]}`)?.code ?? null
+  if (parts.length === 2 && isRegion(parts[1]!)) return TARGETS.get(lang)?.code ?? null
+  return null
+}
+
+const isRegion = (subtag: string): boolean => /^(?:[a-z]{2}|[0-9]{3})$/.test(subtag)
+
+/** What a settings screen preselects for a CMS language: the exact match, else the default, else null. */
+export function suggestTarget(code: string): string | null {
+  return matchTarget(code) ?? defaultTarget(code)
+}
+
+/**
+ * The targets sorted by English name, for the language combo box. Show the name localized where
+ * the platform can (e.g. `Intl.DisplayNames`) and the code next to it.
+ */
+export function targetOptions(): readonly TargetLanguage[] {
+  return TARGET_OPTIONS
+}
+
+const TARGET_OPTIONS: readonly TargetLanguage[] = Object.freeze(
+  [...TARGET_LANGUAGES].sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0)),
+)
+
+/** The supported source for `code`: exact match, else its first subtag (`en-US` → `en`), else null. */
+export function matchSource(code: string): string | null {
+  const k = key(code)
+  if (k === '') return null
+  return SOURCES.get(k)?.code ?? SOURCES.get(k.split('-')[0]!)?.code ?? null
+}
+
+function mapped(code: string, mapping: LanguageMapping | undefined): string | null {
+  if (!mapping) return null
+  const wanted = key(code)
+  for (const [from, to] of Object.entries(mapping)) {
+    if (key(from) === wanted && typeof to === 'string' && to.trim() !== '') return to.trim()
+  }
+  return null
+}
+
+/**
+ * The target code to send: the mapping's value (sent as it is, even if not in the list), else an
+ * exact match, else the default (`defaultTarget`), else `SupertextError('unsupported_language')`
+ * (nothing is sent).
+ */
+export function target(code: string, mapping?: LanguageMapping): string {
+  const result = mapped(code, mapping) ?? matchTarget(code) ?? defaultTarget(code)
+  if (result === null) throw new SupertextError('unsupported_language', { targetLang: code.trim() || undefined })
+  return result
+}
+
+/**
+ * The source code to send: the mapping's value in its source form (`de-CH` → `de`; an unknown value as it is),
+ * else `matchSource`, else `unsupported_language`. `''` stays `''` (auto-detect).
+ */
+export function source(code: string, mapping?: LanguageMapping): string {
+  if (code.trim() === '') return ''
+  // One mapping serves both directions: a mapped target code is sent in its source form (de-CH → de).
+  const fromMapping = mapped(code, mapping)
+  const result = fromMapping !== null ? (matchSource(fromMapping) ?? fromMapping) : matchSource(code)
+  if (result === null) throw new SupertextError('unsupported_language', { sourceLang: code.trim() })
+  return result
+}
+
+/** Whether a supported target offers formal/informal; null for a code that isn't in the list. */
+export function supportsPoliteness(targetCode: string): boolean | null {
+  return TARGETS.get(key(targetCode))?.politeness ?? null
+}
+
+export function isSupportedTarget(code: string): boolean {
+  return matchTarget(code) !== null
+}
+
+export function isSupportedSource(code: string): boolean {
+  return SOURCES.has(key(code))
+}
+
+/** The language helpers as one object: `Languages.target('de', { de: 'de-CH' })`. */
+export const Languages = Object.freeze({
+  SOURCES: SOURCE_LANGUAGES,
+  TARGETS: TARGET_LANGUAGES,
+  DEFAULT_TARGETS,
+  matchTarget,
+  defaultTarget,
+  suggestTarget,
+  targetOptions,
+  matchSource,
+  target,
+  source,
+  supportsPoliteness,
+  isSupportedTarget,
+  isSupportedSource,
+})

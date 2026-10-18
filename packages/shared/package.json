@@ -1,0 +1,15 @@
+{
+  "name": "@supertext-review/shared",
+  "version": "0.1.0",
+  "description": "Code shared by the localization review proxy and the Chrome extension: segments, text normalization, markup rules, review API types.",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  }
+}
