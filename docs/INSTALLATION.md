@@ -42,7 +42,7 @@ Permissions: *side panel*, *storage* (the review link and the reviewer's name), 
 
 ## Pointing a plugin at the proxy
 
-The proxy answers exactly like the Supertext AI file translation API v1 under `https://<proxy>/v1/`. Nothing changes in the plugin except its **Supertext API URL**: the plugin's base URL setting or environment variable (each plugin's `docs/INSTALLATION.md` names it). The plugin keeps its own API key; the proxy forwards it to Supertext with every call that reaches Supertext, so billing, language pairs and errors stay Supertext's.
+The proxy answers exactly like the Supertext AI file translation API v1 under `https://<proxy>/v1/`. Nothing changes in the plugin except its **Supertext API URL**: the plugin's base URL setting or environment variable (each plugin's `docs/INSTALLATION.md` names it). **Contao** has an on/off switch instead: tick *Translation review* in the website root of each language to review (Content → Pages → edit the website root → *Supertext*); it uses this proxy's address by default (`review_url` in the bundle configuration, or `SUPERTEXT_REVIEW_URL` in the demo). The plugin keeps its own API key; the proxy forwards it to Supertext with every call that reaches Supertext, so billing, language pairs and errors stay Supertext's.
 
 - No Supertext account yet? Create one at https://www.supertext.com/person/en/account/signin. Generate your API key at https://www.supertext.com/en/integrations/api (supertext.com → Integrations → API; requires the Admin role).
 - The key check (*Test connection*, the automatic check on save) goes through the proxy too: `GET features` is passed on to Supertext unchanged.

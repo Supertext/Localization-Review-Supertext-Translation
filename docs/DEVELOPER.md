@@ -130,7 +130,7 @@ Authorization: Bearer <REVIEW_USAGE_TOKEN>
 | `segments` | The translation memory (see above), with status `ai`, `corrected` or `approved`, request count and the plugin's User-Agent |
 | `segment_events` | History per segment: `ai`, `correction`, `approval`, `comment`, with reviewer, role and link |
 | `jobs` | One upload (the proxy's `file_id`): mode, original document, segment keys, Supertext's file id and status, Supertext's document in *full* mode. Deleted after 24 hours |
-| `integrations` | Which plugin uses the proxy, per tenant: plugin name and latest version, SDK, User-Agent, counters (key checks, uploads, uploads answered from the memory), first and last request. Parsed from the User-Agent the SDKs send (`supertext-sdk-<language>[/<version>] <Plugin>/<version>`; plugins without the SDK send `<plugin>/<version>`), in `src/lib/integrations.ts`. Recording never fails a request |
+| `integrations` | Which plugin uses the proxy, per tenant: plugin name and latest version, SDK, User-Agent, counters (key checks, uploads, uploads answered from the memory), first and last request. Parsed from the User-Agent the SDKs send (`supertext-sdk-<language>[/<version>] <Plugin>/<version>`; right after the SDK token the plugin may come without a version, as older Contao releases send it; plugins without the SDK send `<plugin>/<version>`), in `src/lib/integrations.ts`. Recording never fails a request |
 | `review_sites` | A customer website: tenant, origin, source language and path prefix, target language prefixes |
 | `review_links` | Review links (see above) |
 

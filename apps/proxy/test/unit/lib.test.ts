@@ -80,6 +80,8 @@ describe('plugins from the User-Agent', async () => {
     expect(parseUserAgent('supertext-sdk-php Typo3-Supertext-Translation/0.6.0')).toEqual({ plugin: 'Typo3-Supertext-Translation', version: '0.6.0', sdk: 'php' });
     expect(parseUserAgent('supertext-sdk-typescript/0.5.0 Payload-Supertext-Translation/1.2.0')).toEqual({ plugin: 'Payload-Supertext-Translation', version: '1.2.0', sdk: 'typescript' });
     expect(parseUserAgent('supertext-wordpress-polylang/2.1.0 WordPress/6.9')).toEqual({ plugin: 'supertext-wordpress-polylang', version: '2.1.0', sdk: '' });
+    expect(parseUserAgent('supertext-sdk-php Contao-Supertext-Translation')).toEqual({ plugin: 'Contao-Supertext-Translation', version: '', sdk: 'php' });
+    expect(parseUserAgent('Mozilla/5.0 (X11; Linux x86_64)')).toEqual({ plugin: '', version: '', sdk: '' });
     expect(parseUserAgent('GuzzleHttp/7 curl/8.5 PHP/8.3')).toEqual({ plugin: '', version: '', sdk: '' });
     expect(parseUserAgent('')).toEqual({ plugin: '', version: '', sdk: '' });
   });

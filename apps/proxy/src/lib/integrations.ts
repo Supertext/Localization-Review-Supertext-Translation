@@ -1,8 +1,10 @@
 /**
  * Which plugins use the proxy. The Supertext SDKs send
  * `User-Agent: supertext-sdk-<language>[/<version>] <Plugin>/<version>`
- * (e.g. `supertext-sdk-php Typo3-Supertext-Translation/0.6.0`); plugins
- * without the SDK send their own name and version. The proxy records one row
+ * (e.g. `supertext-sdk-php Typo3-Supertext-Translation/0.6.0`); some send the
+ * plugin's name without a version after the SDK token (Contao:
+ * `supertext-sdk-php Contao-Supertext-Translation`); plugins without the SDK send
+ * their own name and version. The proxy records one row
  * per tenant and plugin with the latest version and simple counters.
  */
 import { db } from './db';
@@ -17,7 +19,7 @@ export interface ParsedUserAgent {
 }
 
 const SDK_TOKEN = /^supertext-sdk-([a-z]{1,20})(?:\/\S{0,40})?$/i;
-const PRODUCT = /^([A-Za-z0-9][A-Za-z0-9._-]{0,99})\/(\S{1,40})$/;
+const PRODUCT = /^([A-Za-z0-9][A-Za-z0-9._-]{0,99})(?:\/(\S{1,40}))?$/;
 /** Tokens that are never the plugin: HTTP clients and runtimes. */
 const GENERIC = /^(mozilla|node|node-fetch|undici|axios|guzzlehttp|guzzle|curl|php|python-requests|python|okhttp|java|dotnet|\.net|wordpress|symfony|httpclient|go-http-client|supertext-review-proxy)$/i;
 
@@ -32,9 +34,10 @@ export function parseUserAgent(ua: string): ParsedUserAgent {
       continue;
     }
     const p = PRODUCT.exec(token);
-    if (p && !plugin && !GENERIC.test(p[1]!)) {
+    // A name without a version only counts right after the SDK token.
+    if (p && !plugin && !GENERIC.test(p[1]!) && (p[2] !== undefined || sdk)) {
       plugin = p[1]!;
-      version = p[2]!;
+      version = p[2] ?? '';
     }
   }
   return { plugin, version, sdk };
