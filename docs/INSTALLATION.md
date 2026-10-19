@@ -50,6 +50,8 @@ The proxy answers exactly like the Supertext AI file translation API v1 under `h
 
 What changes for the customer: texts the proxy has translated before come back with the stored translation (or the reviewed one) without a new Supertext call. New texts go to Supertext as before.
 
+Reviewers' corrections reach the CMS the next time the plugin translates that text, or earlier when the plugin fetches pending corrections from the proxy (plugins that support it say so in their own guide).
+
 ## Update
 
 Push to `main`; Railway rebuilds and restarts. Migrations run at start and are safe to run again.

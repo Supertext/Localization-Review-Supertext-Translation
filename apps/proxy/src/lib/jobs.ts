@@ -14,6 +14,7 @@ import { isBlankSegment, isSafeSegmentContent, replaceSegments, scanDocument, sc
 import { db } from './db';
 import { apiError, json, readBody } from './http';
 import { countHits, segmentKey, servedTranslations, storeAiResults, type AiResult, type PairScope } from './memory';
+import { recordLocations, type Delivered } from './corrections';
 import { recordIntegration } from './integrations';
 import { markVerified, recentlyVerified, touchTenant, type Caller } from './tenant';
 import * as upstream from './upstream';
@@ -80,7 +81,7 @@ async function tryUpstream(fn: () => Promise<upstream.UpstreamResponse>): Promis
  * Makes sure Supertext still accepts the key before answering from the
  * memory alone. Returns an error response to pass on, or null.
  */
-async function verifyKey(caller: Caller): Promise<Response | null> {
+export async function verifyKey(caller: Caller): Promise<Response | null> {
   if (recentlyVerified(caller.tenant)) return null;
   const r = await tryUpstream(() => upstream.features(caller.key, caller.userAgent, ''));
   if (r instanceof Response) return r;
@@ -263,16 +264,34 @@ export async function jobTranslation(id: string, caller: Caller): Promise<Respon
   const base = job.mode === 'full' && job.upstream_html ? job.upstream_html : job.original_html;
   const served = await servedTranslations(job.segments.flatMap((s) => (s.key ? [s.key] : [])));
   const keyOf = new Map(job.segments.map((s) => [s.id, s.key]));
+  const delivered: { stId: string; key: string; html: string }[] = [];
   const out = replaceSegments(base, scanSegments(base), (segmentId) => {
     const key = keyOf.get(segmentId);
     if (!key) return undefined; // blank or unknown to the job: as it is
     const html = served.get(key);
-    if (html !== undefined && isSafeSegmentContent(html)) return html;
+    if (html !== undefined && isSafeSegmentContent(html)) {
+      delivered.push({ stId: segmentId, key, html });
+      return html;
+    }
     // Not available: in a whole-document answer keep Supertext's text, otherwise drop the
     // element so the integration sees the segment as missing.
     return job.mode === 'full' ? undefined : null;
   });
+  // Where each segment sits, for corrections made after this download (see corrections.ts).
+  const ids = await segmentIds(delivered.map((d) => d.key));
+  await recordLocations(
+    caller,
+    scopeOf(job),
+    delivered.flatMap((d): Delivered[] => (ids.has(d.key) ? [{ stId: d.stId, segmentId: ids.get(d.key)!, html: d.html }] : [])),
+  );
   return new Response(out, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
+}
+
+async function segmentIds(keys: readonly string[]): Promise<Map<string, string>> {
+  const unique = [...new Set(keys)];
+  if (unique.length === 0) return new Map();
+  const rows = await db()<{ id: string; key: string }[]>`SELECT id::text AS id, key FROM segments WHERE key = ANY(${unique})`;
+  return new Map(rows.map((r) => [r.key, r.id]));
 }
 
 export async function deleteJob(id: string, caller: Caller): Promise<Response> {

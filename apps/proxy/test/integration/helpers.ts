@@ -43,6 +43,8 @@ export async function setUp(name: string): Promise<Harness> {
   const approve = await import('../../src/app/api/review/segments/[id]/approve/route');
   const comment = await import('../../src/app/api/review/segments/[id]/comment/route');
   const usage = await import('../../src/app/api/usage/route');
+  const corrections = await import('../../src/app/v1/review/corrections/route');
+  const acknowledge = await import('../../src/app/v1/review/corrections/acknowledge/route');
 
   const params = (id: string) => ({ params: Promise.resolve({ id }) });
   const dispatch = async (input: string, init: RequestInit = {}): Promise<Response> => {
@@ -55,6 +57,8 @@ export async function setUp(name: string): Promise<Harness> {
     if ((m = path.match(/^\/v1\/translate\/ai\/file\/([^/]+)\/status$/)) && method === 'GET') return status.GET(req, params(m[1]!));
     if ((m = path.match(/^\/v1\/translate\/ai\/file\/([^/]+)\/translation$/)) && method === 'GET') return translation.GET(req, params(m[1]!));
     if ((m = path.match(/^\/v1\/translate\/ai\/file\/([^/]+)$/)) && method === 'DELETE') return one.DELETE(req, params(m[1]!));
+    if (path === '/v1/review/corrections' && method === 'GET') return corrections.GET(req);
+    if (path === '/v1/review/corrections/acknowledge' && method === 'POST') return acknowledge.POST(req);
     if (path === '/api/review/session' && method === 'GET') return session.GET(req);
     if (path === '/api/usage' && method === 'GET') return usage.GET(req);
     if (path === '/api/review/match' && method === 'POST') return match.POST(req);

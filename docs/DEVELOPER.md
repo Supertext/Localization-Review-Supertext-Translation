@@ -48,6 +48,18 @@ Per key, `segments` stores the source, the AI translation **as first received** 
 - `GET …/{id}/translation`: 404 `NOT_READY` before `done`. The answer is the original document (in *full* mode: Supertext's translated document) with every segment's inner HTML replaced by what the proxy serves now, so a correction made a second ago is in it. A segment Supertext didn't return is dropped from the answer, so the plugin sees it as missing, as it would with Supertext (in *full* mode Supertext's text stays).
 - `DELETE …/{id}`: forgets the job and deletes Supertext's file (best effort).
 - `GET features` is passed through unchanged.
+- Every translation download also records **where each segment sits** (see *Corrections for the CMS*).
+
+### Corrections for the CMS
+
+Corrections reach the CMS on the next round trip (the plugin sends the text again and gets the corrected version). For content that isn't sent again, the plugin **pulls** them: two endpoints under `/v1/` that only the proxy answers (Supertext answers 404; the SDKs turn that into *not supported*). Pull instead of a webhook, because CMS servers are often not reachable from outside (firewalls, basic auth, staging hosts), and the plugin authenticates with the API key it already has.
+
+- **Locations:** `GET …/{id}/translation` records, per segment it serves, the plugin's `data-st-id`, the segment and the HTML the plugin received, in `segment_locations` (unique per tenant, plugin name from the User-Agent without version, language pair, politeness and `data-st-id`). A later upload under the same id moves the location to the new segment (the field's text changed). Recording never fails the download.
+- **Pending** = a location whose segment now serves something else than the plugin received (a correction, or a newer one).
+- `GET /v1/review/corrections?target_lang=&source_lang=&politeness=&after=&limit=` (all optional; `limit` 1–500, default 500): `{ "corrections": [{ "id", "st_id", "source_lang" (null = detected), "target_lang", "politeness", "source_html", "html", "status", "corrected_at", "version" }], "next_after": "<id>" | null }`, ordered by `id`; pass `next_after` as `after` for the next page. Only the calling plugin's locations of the key's tenant; `html` passes the same check as every served segment.
+- `POST /v1/review/corrections/acknowledge` with `{ "corrections": [{ "id", "version" }] }` (at most 1000): the plugin wrote these into the CMS. Counts only when `version` (first 16 hex digits of the SHA-256 of `html`) is still current, so a correction made after the fetch stays pending. Answers `{ "acknowledged": n }`; ids of other tenants or plugins are ignored.
+- Both check the key with Supertext like a memory answer (at most every 10 minutes) and answer errors in Supertext's shape (400 `INVALID_PARAMETER`/`INVALID_JSON`, 401/403 passed through).
+- `data-st-id` must be the plugin's own stable reference to the field (Contao: `tl_content.12.text`); positional ids (`0`, `1`, …) can't be written back. Locations exist only for downloads since this feature (October 2026); content translated before shows up after its next translation.
 - Any unexpected failure (database down, a bug) answers 503 `SERVICE_UNAVAILABLE` in Supertext's error shape (`guarded()` in `http.ts`), which the SDK reports as *service unavailable*; the error goes to the log, never to the caller. The review API answers `{ "error": "unavailable" }` the same way.
 
 ## Review API
@@ -131,6 +143,7 @@ Authorization: Bearer <REVIEW_USAGE_TOKEN>
 | `segment_events` | History per segment: `ai`, `correction`, `approval`, `comment`, with reviewer, role and link |
 | `jobs` | One upload (the proxy's `file_id`): mode, original document, segment keys, Supertext's file id and status, Supertext's document in *full* mode. Deleted after 24 hours |
 | `integrations` | Which plugin uses the proxy, per tenant: plugin name and latest version, SDK, User-Agent, counters (key checks, uploads, uploads answered from the memory), first and last request. Parsed from the User-Agent the SDKs send (`supertext-sdk-<language>[/<version>] <Plugin>/<version>`; right after the SDK token the plugin may come without a version, as older Contao releases send it; plugins without the SDK send `<plugin>/<version>`), in `src/lib/integrations.ts`. Recording never fails a request |
+| `segment_locations` | Where a segment sits in a plugin's content: tenant, plugin, language pair, politeness, `data-st-id`, the segment and what the plugin last received (see *Corrections for the CMS*) |
 | `review_sites` | A customer website: tenant, origin, source language and path prefix, target language prefixes |
 | `review_links` | Review links (see above) |
 
@@ -205,7 +218,7 @@ Releases are published by `.github/workflows/release.yml` when the version is of
 ## Known limitations / roadmap
 
 - **Chrome Web Store:** the extension is installed unpacked from the release zip until it is listed (see the installation guide).
-- **Write-back:** corrections reach the CMS on the plugin's next request for that text. A push to the CMS (for content that isn't translated again) is planned in the SDK, so it is built once for all plugins.
+- **Write-back:** corrections reach the CMS on the plugin's next request for that text, or when the plugin pulls them (`/v1/review/corrections`, through the SDK's `pendingCorrections()`/`acknowledge()`). Each plugin still needs to call these and write the texts into its fields; Contao is the first.
 - **Plugins' API URL:** switching a plugin to the proxy needs its base URL setting or environment variable. Check each plugin's installation guide; plugins that only have it for tests need a real setting first.
 - **Text split across elements** or changed by templates doesn't match exactly; the optional website proxy with segment markers (project doc) would cover it.
 - **Translation memory per tenant only:** no sharing between a customer's keys yet (a customer with several keys has several tenants).
