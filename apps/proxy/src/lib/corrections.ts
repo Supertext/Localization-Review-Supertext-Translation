@@ -75,6 +75,7 @@ interface PendingRow {
   target_lang: string;
   politeness: string;
   source_html: string;
+  previous_html: string;
   html: string;
   status: string;
   updated_at: Date;
@@ -99,7 +100,7 @@ export async function pendingCorrections(req: Request, caller: Caller): Promise<
   const plugin = parseUserAgent(caller.userAgent).plugin;
   const sql = db();
   const rows = await sql<PendingRow[]>`
-    SELECT l.id::text AS id, l.st_id, l.source_lang, l.target_lang, l.politeness, s.source_html,
+    SELECT l.id::text AS id, l.st_id, l.source_lang, l.target_lang, l.politeness, s.source_html, l.delivered_html AS previous_html,
            coalesce(s.correction_html, s.ai_html) AS html, s.status, s.updated_at
     FROM segment_locations l JOIN segments s ON s.id = l.segment_id
     WHERE l.tenant = ${caller.tenant} AND l.plugin = ${plugin} AND l.id > ${after}
@@ -120,6 +121,8 @@ export async function pendingCorrections(req: Request, caller: Caller): Promise<
       target_lang: r.target_lang,
       politeness: r.politeness || 'default',
       source_html: r.source_html,
+      // What the plugin received last: it can check the field still holds it before overwriting.
+      previous_html: r.previous_html,
       html: r.html,
       status: r.status,
       corrected_at: r.updated_at.toISOString(),

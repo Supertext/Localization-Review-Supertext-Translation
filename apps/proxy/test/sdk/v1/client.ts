@@ -11,6 +11,16 @@ import { DEFAULT_MAX_CHARACTERS, isBlank, planBatches, type KeyedSegment } from 
 import { errorForFileStatus, errorForStatus, SupertextError } from './errors.js'
 import { build, parse, type Segment } from './html-document.js'
 import { encodeMultipart, type MultipartBody } from './multipart.js'
+import {
+  ACKNOWLEDGE_BATCH_SIZE,
+  acknowledgeBody,
+  acknowledgedCount,
+  CORRECTIONS_MAX_PAGES,
+  correctionsPath,
+  parseCorrectionsPage,
+  type Correction,
+  type PendingCorrectionsOptions,
+} from './corrections.js'
 import { apiKeyCheckFromError, apiKeyFingerprint, isoSeconds, KEY_CHECK_TIMEOUT_MS, type ApiKeyCheck } from './api-key-check.js'
 
 export const LIVE_BASE_URL = 'https://api.supertext.com/v1/'
@@ -227,6 +237,38 @@ export class SupertextClient {
 
     const out = keyed.map((s) => [s.key, isBlank(s.text) ? s.text : translated.get(s.key)!] as const)
     return isMap ? new Map(out) : Object.fromEntries(out)
+  }
+
+  /**
+   * Corrections reviewers made that the integration hasn't written into the CMS yet
+   * (Supertext Localization Review; spec/corrections.json). Only the review service
+   * answers this: against Supertext's API it throws `not_found`. Follows all pages.
+   * `segmentId` is the `data-st-id` the integration sent, so this is useful when the
+   * integration builds its documents with its own ids (`translateHtml`).
+   */
+  async pendingCorrections(options: PendingCorrectionsOptions = {}): Promise<Correction[]> {
+    const all: Correction[] = []
+    let after: string | null = null
+    for (let page = 0; page < CORRECTIONS_MAX_PAGES; page++) {
+      const { corrections, nextAfter } = parseCorrectionsPage(await this.#request('GET', correctionsPath(options, after)))
+      all.push(...corrections)
+      if (nextAfter === null || nextAfter === after) break
+      after = nextAfter
+    }
+    return all
+  }
+
+  /**
+   * Tells the review service these corrections are in the CMS now; returns how many it
+   * accepted. Only the fetched `version` counts: a newer correction stays pending.
+   */
+  async acknowledgeCorrections(corrections: readonly Pick<Correction, 'id' | 'version'>[]): Promise<number> {
+    let total = 0
+    for (let i = 0; i < corrections.length; i += ACKNOWLEDGE_BATCH_SIZE) {
+      const body = new TextEncoder().encode(acknowledgeBody(corrections.slice(i, i + ACKNOWLEDGE_BATCH_SIZE)))
+      total += acknowledgedCount(await this.#request('POST', 'review/corrections/acknowledge', { body: body.buffer as ArrayBuffer, contentType: 'application/json' }))
+    }
+    return total
   }
 
   /** One HTTP request with auth, retries on 429 and error mapping. Returns the body text of a 2xx answer. */

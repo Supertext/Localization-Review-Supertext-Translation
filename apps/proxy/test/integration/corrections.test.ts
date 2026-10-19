@@ -23,6 +23,7 @@ interface Correction {
   target_lang: string;
   politeness: string;
   source_html: string;
+  previous_html: string;
   html: string;
   status: string;
   corrected_at: string;
@@ -89,6 +90,7 @@ describe('pending corrections', () => {
   });
 
   it('lists a correction for every place the text sits, for the plugin and key that sent it', async () => {
+    const [ai] = await sql`SELECT ai_html FROM segments WHERE source_text = 'Welcome to our shop' AND tenant = ${fingerprintOf('key-corr-a')}`;
     await correct('Welcome to our shop', 'Herzlich willkommen in unserem Shop');
     const page = await pending();
     expect(page.corrections).toHaveLength(1);
@@ -98,6 +100,8 @@ describe('pending corrections', () => {
       target_lang: 'de-CH',
       politeness: 'default',
       source_html: 'Welcome to our shop',
+      // What the plugin received with its download: the AI translation.
+      previous_html: ai!.ai_html,
       html: 'Herzlich willkommen in unserem Shop',
       status: 'corrected',
     });
@@ -155,5 +159,26 @@ describe('pending corrections', () => {
     const { forgetVerifiedKeys } = await import('../../src/lib/tenant');
     forgetVerifiedKeys();
     expect((await call('', { key: 'invalid' })).status).toBe(401);
+  });
+});
+
+describe('with the SDK client', () => {
+  it('fetches, writes and acknowledges like a plugin', async () => {
+    const sdk = client('key-corr-sdk');
+    await translate({ 'tl_content.9.text': 'Opening hours' }, 'key-corr-sdk');
+    await sql`
+      UPDATE segments SET correction_html = 'Öffnungszeiten', status = 'corrected', updated_at = now()
+      WHERE source_text = 'Opening hours' AND tenant = ${fingerprintOf('key-corr-sdk')}`;
+    const pending = await sdk.pendingCorrections({ targetLang: 'de-CH' });
+    expect(pending).toHaveLength(1);
+    expect(pending[0]).toMatchObject({ segmentId: 'tl_content.9.text', html: 'Öffnungszeiten', sourceLang: 'en', politeness: 'default' });
+    expect(await sdk.acknowledgeCorrections(pending)).toBe(1);
+    expect(await sdk.pendingCorrections({ targetLang: 'de-CH' })).toEqual([]);
+  });
+
+  it('gets not_found from Supertext itself', async () => {
+    const { SupertextClient: Direct } = await import('../sdk/v1/index');
+    const direct = new Direct('key-corr-a', { baseUrl: h.standInUrl, sleep: async () => {} });
+    await expect(direct.pendingCorrections()).rejects.toMatchObject({ code: 'not_found' });
   });
 });
