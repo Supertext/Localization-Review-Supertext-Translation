@@ -5,7 +5,7 @@
 ## Always
 
 - **Docs in the same commit:** `docs/INSTALLATION.md` (deploy, settings, pointing a plugin at the proxy, troubleshooting), `docs/USER_GUIDE.md` (staff pages, later reviewers, with screenshots), `docs/DEVELOPER.md` (how the proxy answers, review API, architecture, tests, releasing). `CHANGELOG.md` gets an entry under *Unreleased* for every visible change; `README.md` stays a short overview.
-- **The proxy is a drop-in for the Supertext API v1.** Plugins in the field must work against it unchanged: same paths, fields, statuses and error answers. Supertext's non-200 answers are passed on as they are. Every change to `/v1/` keeps the integration tests that drive it with the SDK client green; new API behaviour learned here goes to Supertext-API-SDK-and-Guide too.
+- **The proxy is a drop-in for the Supertext API v1.** Plugins in the field must work against it unchanged: same paths, fields, statuses and error answers. Supertext's non-200 answers are passed on as they are. Every change to `/v1/` keeps the integration tests that drive it with the SDK client green; new API behaviour learned here goes to Supertext-API-SDK-Guide too.
 - **Never serve one tenant's translations to another.** Memory keys, jobs, review links and every query are scoped by the key's fingerprint. Never store or log API keys, the admin password or the link secret.
 - **Corrections end up on customers' websites:** never weaken `checkCorrection` (source markup only) and never render segment HTML in the staff pages (text only).
 - **No backtracking regexes on uploaded or reviewer content:** documents and corrections go through the linear tokenizer in `packages/shared/src/html.ts`; keep the timing cases in the hardening tests passing.

@@ -39,7 +39,7 @@ jobs:
         run: |
           set -euo pipefail
           SDK_COMMIT=$(cat apps/proxy/test/sdk/COMMIT)
-          git clone --quiet https://github.com/Supertext/Supertext-API-SDK-and-Guide "$RUNNER_TEMP/sdk"
+          git clone --quiet https://github.com/Supertext/Supertext-API-SDK-Guide "$RUNNER_TEMP/sdk"
           git -C "$RUNNER_TEMP/sdk" checkout --quiet "$SDK_COMMIT"
           SDK_DIR="$RUNNER_TEMP/sdk" apps/proxy/scripts/vendor-test-deps.sh
           git diff --exit-code -- apps/proxy/test

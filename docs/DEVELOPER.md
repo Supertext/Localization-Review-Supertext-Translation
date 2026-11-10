@@ -16,7 +16,7 @@ npm workspaces, one lockfile at the root.
 
 ## How the proxy answers
 
-The proxy speaks the Supertext AI file translation API v1 ([reference](https://github.com/Supertext/Supertext-API-SDK-and-Guide/blob/main/docs/api-reference.md)) under `/v1/`, so the Supertext SDK and every plugin work against it unchanged. The integration tests prove this with the SDK's own TypeScript client.
+The proxy speaks the Supertext AI file translation API v1 ([reference](https://github.com/Supertext/Supertext-API-SDK-Guide/blob/main/docs/api-reference.md)) under `/v1/`, so the Supertext SDK and every plugin work against it unchanged. The integration tests prove this with the SDK's own TypeScript client.
 
 ### Tenants
 
@@ -185,7 +185,7 @@ npm run test:integration      # needs Postgres on 127.0.0.1:5432 (TEST_DATABASE_
 
 The integration tests drop and recreate their own databases (`review_test_proxy`, `review_test_review`, `review_test_corrections`, `review_test_hardening`), start the stand-in on a free port and call the route handlers directly. They drive the proxy with the **Supertext TypeScript SDK client**, so they check the contract the plugins rely on: first request through Supertext, repeats from the memory, only missing segments uploaded, languages/politeness/tenants kept apart, whole-document uploads, errors passed through unchanged, the key recheck, and the review API (links, matching, corrections and their effect on the next request, markup rules, tenant isolation), and the corrections for the CMS (locations per plugin and key, pending, acknowledged versions, paging, and the SDK's `pendingCorrections`/`acknowledgeCorrections` against the proxy and against the stand-in, which answers `not_found`).
 
-`apps/proxy/test/` bundles copies from [Supertext-API-SDK-and-Guide](https://github.com/Supertext/Supertext-API-SDK-and-Guide): the stand-in, `spec/languages.json` and the TypeScript SDK's sources (`test/sdk/`, tests only). Never edit them: `apps/proxy/scripts/vendor-test-deps.sh [ref]` (or `SDK_DIR=<clone>`) replaces them and writes `COMMIT`. CI checks they match that commit.
+`apps/proxy/test/` bundles copies from [Supertext-API-SDK-Guide](https://github.com/Supertext/Supertext-API-SDK-Guide): the stand-in, `spec/languages.json` and the TypeScript SDK's sources (`test/sdk/`, tests only). Never edit them: `apps/proxy/scripts/vendor-test-deps.sh [ref]` (or `SDK_DIR=<clone>`) replaces them and writes `COMMIT`. CI checks they match that commit.
 
 CI (`.github/workflows/ci.yml`): typecheck, unit and integration tests with Postgres 16, the bundled copies check, and the image check (`apps/proxy/test/image-check.sh`: builds the image, starts it twice on a shared Postgres with the stand-in, checks health, the login redirect, a translation, the repeat from the memory after a restart, and that no secret appears in the log).
 

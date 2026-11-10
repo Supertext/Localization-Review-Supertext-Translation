@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 import postgres from 'postgres'
 import { chromium, type BrowserContext, type Page } from 'playwright'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-// @ts-expect-error -- plain JavaScript (vendored from Supertext-API-SDK-and-Guide)
+// @ts-expect-error -- plain JavaScript (vendored from Supertext-API-SDK-Guide)
 import { createStandIn } from '../../../proxy/test/stand-in/stand-in.mjs'
 import { SupertextClient } from '../../../proxy/test/sdk/v1/index'
 

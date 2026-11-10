@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import type { AddressInfo } from 'node:net';
 import type http from 'node:http';
 import postgres from 'postgres';
-// Plain JavaScript (vendored from Supertext-API-SDK-and-Guide).
+// Plain JavaScript (vendored from Supertext-API-SDK-Guide).
 import { createStandIn } from '../stand-in/stand-in.mjs';
 
 export const SERVER = process.env.TEST_DATABASE_URL || 'postgres://postgres:postgres@127.0.0.1:5432/postgres';
